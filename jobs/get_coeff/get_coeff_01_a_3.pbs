@@ -1,0 +1,44 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_getcoeff_1_a_3
+#PBS -l walltime=1:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+module purge
+module load pbs
+# TODO: Actually need to source this in get.coeff_00.sh to load the correct python interpreter.
+# At present $PATH will be different in this script compared to get.coef.sh. The version launched
+# in get.coef.sh won't have numpy available and script won't work.
+source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+module load cdo
+module load gdl
+module load idl
+
+export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
+source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+
+obsdata=AWAP
+variable=rsds
+refperiod=1990-2017
+bcmeth=rsds
+gcm=CNRM-CM5
+yst=$(cut -d '-' -f 1 <<< ${refperiod})
+yen=$(cut -d '-' -f 2 <<< ${refperiod})
+
+#first copy the idat nc4 file into the coeff dir - don't ask me why this isn't already done:
+# TODO: Do we need this? Other steps seem to run fine even if this fails.
+cp $tdir/$gcm/$obsdata/idat/${variable}*_${yst}0101-${yen}1231.nc4 $tdir/$gcm/$obsdata/coef/.
+wait
+
+# MEANT to be get_coeff_00.sh do not change!
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_00.sh $obsdata $refperiod $variable $bcmeth $gcm
+
+
+

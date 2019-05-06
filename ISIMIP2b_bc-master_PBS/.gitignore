@@ -1,0 +1,27 @@
+# ignore sbatch scripts
+*.sb
+
+# ignore temporary swp files
+*.swp
+
+# ignore compiled python files
+*.pyc
+
+# ignore code for local bias correction
+*local*
+
+# ignore slogs and their check scripts
+slogs*
+
+# ignore wrapper script
+global.get.app.sh
+
+# ignore som gdl routines
+gdl/*hurs*
+gdl/curvefit.pro
+gdl/*beta.pro
+gdl/read*gridspecs.pro
+
+# ignore python TOA data
+python/TOA_daily_mean_insolation_climatology/*
+!python/TOA_daily_mean_insolation_climatology/.keep

@@ -1,0 +1,25 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_prepare4
+#PBS -l walltime=10:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=32gb
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION AND THAT THE OUTPUT DIRS HAVE ALREADY BEEN CREATED
+module load cdo
+module load nco
+
+obs_dir=/g/data/er4/data/CLIMATE/rain_day
+obs_file=rain_day
+year_start=1975
+year_end=2014
+newvar=pr
+output_file=/g/data/er4/ISIMIP/AWAP/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+oldvar=$obs_file
+chtime=12
+exp="-expr,'pr = (( pr > -999.0 ))? pr/86400:pr' -chunit,'mm','kg m-2 s-1'"
+
+/g/data/er4/ISIMIP/AWAP/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"

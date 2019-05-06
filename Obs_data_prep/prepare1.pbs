@@ -1,0 +1,55 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_prepare_1
+#PBS -l walltime=10:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=32gb
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION AND THAT THE OUTPUT DIRS HAVE ALREADY BEEN CREATED
+#THIS MUST BE RUN AFTER THE TASMAX and TASMIN
+module load cdo
+
+obs_dir=/g/data/er4/ISIMIP/AWAP
+obs_files=( 'tasmax_day_AWAP_19750101-20141231.nc4' 'tasmin_day_AWAP_19750101-20141231.nc4' )
+year_start=1975
+year_end=2014
+newvar=tas
+output_file=/g/data/er4/ISIMIP/AWAP/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+oldvar=$obs_file
+chtime=12
+#scale and units change: (0.0036*24)
+#taken from transform equation of tempmin and tempmax from AWRA
+#def _mix(lhs,rhs,ratio):
+#    return (1.0-ratio)*lhs + ratio*rhs
+#nodes.mix('tmin','tmax',0.75): lhs=tmin, rhs=tmax, ratio=0.75
+#(1.0-0.75)*tmin + 0.75*tmax = 0.25*tmin + 0.75*tmax
+#change the max and min according to the actual max or min:
+exp1="-expr,'tasmax=(tasmin>tasmax)?tasmin:tasmax'"
+exp2="-expr,'tasmin=(tasmax<tasmin)?tasmax:tasmin'"
+exp3="-expr,'tas=0.75*tasmax+0.25*tasmin'"
+
+cdo -f nc4c -z zip_9 -merge $obs_dir/${obs_files[0]} $obs_dir/${obs_files[1]} ${output_file}.nc4
+wait
+
+mv ${output_file}.nc4 ${output_file}.nc4_tmp
+wait
+
+cdo -f nc4c -z zip_9 ${exp1} ${output_file}.nc4_tmp ${obs_files[0]}
+wait
+
+cdo -f nc4c -z zip_9 ${exp2} ${output_file}.nc4_tmp ${obs_files[1]}
+wait
+
+cdo -f nc4c -z zip_9 -merge $obs_dir/${obs_files[0]} $obs_dir/${obs_files[1]} ${output_file}.nc4
+wait
+
+cdo -f nc4c -z zip_9 ${exp3} ${output_file}.nc4_tmp ${output_file}.nc4
+wait
+
+mv ${output_file}.nc4 ${output_file}.nc4_tmp
+wait
+cdo -f nc4c -z zip_9 selvar,$newvar ${output_file}.nc4_tmp ${output_file}.nc4
+wait

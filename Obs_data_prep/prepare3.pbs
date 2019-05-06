@@ -1,0 +1,26 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_prepare3
+#PBS -l walltime=10:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=32gb
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION AND THAT THE OUTPUT DIRS HAVE ALREADY BEEN CREATED
+module load cdo
+module load nco
+
+obs_dir=/g/data/er4/ISIMIP/AWAP/solar_forcing_climatology_infill/solar_exposure_day
+obs_file=solar_exposure_day
+year_start=1990
+year_end=2017
+newvar=rsds
+output_file=/g/data/er4/ISIMIP/AWAP/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+oldvar=$obs_file
+chtime=12
+# Scale and units change: (10^6 / (24 * 60 * 60) ~= 11.57407)
+exp="-expr,'rsds = (( rsds > -999.0 ))? 11.57407 * rsds:rsds' -chunit,'MJ m^-2','W m^-2'"
+
+/g/data/er4/ISIMIP/AWAP/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"

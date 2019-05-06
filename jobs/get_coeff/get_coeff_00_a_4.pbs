@@ -1,0 +1,33 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_getcoeff_a_4
+#PBS -l walltime=1:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+module load pbs
+module load netcdf
+module load nco
+module load cdo
+module load gdl
+module load idl
+module load ncl
+
+export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
+source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+
+obsdata=AWAP
+variable=pr
+refperiod=1975-2014
+bcmeth=pr
+
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_00.sh $obsdata $refperiod $variable $bcmeth
+
+
+

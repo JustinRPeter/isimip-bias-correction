@@ -1,0 +1,41 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_interp_hist3
+#PBS -l walltime=1:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+module load pbs
+module load netcdf
+module load nco
+module load cdo
+module load ncl
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
+source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+
+gcm=CNRM-CM5
+obsdata=AWAP
+rcp=historical
+var=rsds
+
+period=1971-1980
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False
+wait
+
+period=1981-1990
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False
+wait
+
+period=1991-2000
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False
+wait
+
+period=2001-2005
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False
+wait
+
+

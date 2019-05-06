@@ -1,0 +1,34 @@
+#!/bin/bash
+   
+#PBS -q express
+#PBS -P er4
+#PBS -N job_appcoeff_3
+#PBS -l walltime=24:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=128gb
+
+module load pbs
+source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+module load cdo
+module load gdl
+module load idl
+module load ncl
+
+#ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
+source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+
+obsdata=AWAP
+refperiod=1990-2017
+var=rsds
+bcmeth=rsds
+GCM=CNRM-CM5
+rcp=rcp85
+appperiod=2006-2020
+time=midday
+
+/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/app.coef.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
+
+
+
+
