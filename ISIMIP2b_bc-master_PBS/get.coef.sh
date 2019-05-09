@@ -13,7 +13,7 @@
 
 #CHANGED WKS
 fullpath=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS
-source ${fullpath}/exports.settings.functions_WS.sh
+source ${fullpath}/exports.settings.functions.sh
 
 
 # check input parameters
