@@ -6,7 +6,7 @@
 
 pro idl2nc,ipath,opath,varname,ys,ye,mon,nlat,nlon,lat0,lon0,dlat,dlon,NUMLANDPOINTS,landlat,landlon,missval
   ; restore and reshape IDL data
-  cmrestore,ipath
+  RESTORE,ipath
   nt = n_elements(idldata[0,*])
   data = fltarr(nt,nlat,nlon)
   data = data * 0.0 + missval

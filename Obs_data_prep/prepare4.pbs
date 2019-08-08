@@ -1,5 +1,5 @@
 #!/bin/bash
-   
+
 #PBS -q express
 #PBS -P er4
 #PBS -N job_prepare4
@@ -12,14 +12,25 @@
 module load cdo
 module load nco
 
+#Read directory & file
 obs_dir=/g/data/er4/data/CLIMATE/rain_day
 obs_file=rain_day
-year_start=1975
-year_end=2014
+
+#Time period
+year_start=1976
+year_end=2005
+
+#Rename variable
 newvar=pr
-output_file=/g/data/er4/ISIMIP/AWAP/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+output_file=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+
+#Original variable name
 oldvar=$obs_file
+
 chtime=12
+
+#Unit for precipitation
 exp="-expr,'pr = (( pr > -999.0 ))? pr/86400:pr' -chunit,'mm','kg m-2 s-1'"
 
-/g/data/er4/ISIMIP/AWAP/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"
+#Execute scipt and supply variables
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"

@@ -4,6 +4,7 @@
 #PBS -l walltime=24:00:00
 #PBS -l ncpus=16
 #PBS -l mem=128gb
+#PBS -l software=idl
 
 #PBS -N bc1p5app
 #PBS -P er4
@@ -16,14 +17,15 @@ module purge
 module load cdo
 module load nco
 module load gdl
-module load idl
+# module load idl
+module load idl/8.6
 module load pbs
 
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 
 # import settings
 #CHANGED WKS
-fullpath=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS
+fullpath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS
 source ${fullpath}/exports.settings.functions.sh
 
 
@@ -50,7 +52,8 @@ esac  # obsdataset
 idirobs=$idirOBSdata/$obsdataset
 tdirobsi=$tdir/$obsdataset/idat
 tdirobsc=$tdir/$obsdataset/coef
-export ipathBCmask=$idirobs/$obsdataset.BCmask.$ncs
+export ipathBCmask=$idirOBSdata/$obsdataset.BCmask.$ncs
+
 exit_if_any_does_not_exist $ipathBCmask
 
 export referenceperiod=$2
@@ -157,7 +160,7 @@ fi
 
 export gcm=$5
 case $gcm in
-GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5)
+GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
   echo GCM $gcm;;
 *)
   echo GCM $gcm not supported !!! exiting ... $(date)
@@ -237,7 +240,7 @@ odirgcm=$odirGCMdata/$gcm/$obsdataset
 
 
 # set path to spatial mask for bias correction
-export ipathBCmask=$idirobs/$obsdataset.BCmask.$ncs
+export ipathBCmask=$idirOBSdata/$obsdataset.BCmask.$ncs
 exit_if_any_does_not_exist $ipathBCmask
 
 
@@ -530,7 +533,7 @@ ps)
   ipathtas=$odirgcm/tas$ofilepostvar
   ipathoro=$idirobs/orog_$obsdataset
   exit_if_any_does_not_exist $ipathpsl.$ncs $ipathtas.$ncs $ipathoro.$ncs
-  
+
   echo retrieving $var from $obsdataset orog and bias-corrected psl and tas ...
   # ps = psl / exp((g * oro)/(r_d * tas))
   # need to put -L to avoid seg faults- JUST FOUND THIS OUT THANKS NCI
@@ -566,14 +569,16 @@ ps)
   echo ... converting done
   echo
 
+  #MARKER
   # apply transfer functions
   echo $tdirgcmi
   sfile=app.coef.monthly
   ipathdata=$tdirgcmi/${ifile}_
   ipathtasu=$tdirgcmi/tas${ifilepostvar}_
   ipathtasc=$tdirgcmo/tas${ofilepostvar}_
-  ipathcoef=$tdirgcmc/${var}_${frequency}_${gcm}_${expreference}_${realization}_${obsdataset}_${ysreference}0101-${yereference}1231_
+  ipathcoef=$tdirobsc/${var}_${frequency}_${gcm}_${expreference}_${realization}_${obsdataset}_${ysreference}0101-${yereference}1231_
   opathdata=$tdirgcmo/${ofile}_
+  echo $ipathcoef
   for month in $(seq -w 1 12)
   do
     exit_if_any_does_not_exist $ipathdata$month.dat
@@ -594,7 +599,7 @@ ps)
   done  # month
   echo ... applying done
   echo
-  
+
     # convert IDL binary files to NetCDF file
   echo converting monthly IDL binary files to NetCDF file ...
   sfile=convert.idl2nc.monthly

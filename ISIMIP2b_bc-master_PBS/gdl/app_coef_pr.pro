@@ -10,7 +10,7 @@ exponent_cut = 1e32   ; exponent T0 allowed for full exponential fit ; for full 
 
 
 ; restore transfer function coefficients
-cmrestore,ipathcoef
+RESTORE,ipathcoef
 A0=a_pr
 B0=b_pr
 T0=tau_pr
@@ -24,7 +24,7 @@ s0_m(where(s0_m lt 0))=0.0
 
 
 ; restore GCM data to be corrected
-cmrestore,ipathdata
+RESTORE,ipathdata
 pr_c=idldata
 idldata=0
 pr_total=pr_c
@@ -32,7 +32,7 @@ pr_total=pr_c
 
 ; check for negative values in GCM data
 print,'checking for negative values in input data ...'
-IF (min(pr_c) LT -1e-10) THEN BEGIN
+IF (min(pr_c) LT -1e-5) THEN BEGIN
    print,'negative values in GCM input data !!! exiting ...'
    STOP
 ENDIF
@@ -250,5 +250,5 @@ ENDFOR
 pr_total=0
 idldata=pr_c
 pr_c=0
-cmsave,filename=opath,idldata
+SAVE,filename=opath,idldata
 end

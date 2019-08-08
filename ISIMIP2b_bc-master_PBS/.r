@@ -1,2 +1,2 @@
 GDL> ^C% Interrupt encountered.
-GDL> 
+GDL>

@@ -17,15 +17,15 @@ module load idl
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
 variable=pr
-refperiod=1975-2014
+refperiod=1975-2005
 bcmeth=pr
-gcm=CNRM-CM5
+gcm=MIROC5
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff check
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff check
 
 
 

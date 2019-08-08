@@ -7,20 +7,19 @@
 ###
 
 
-
-export wdir=/g/data/er4/ISIMIP/jobs  # work directory
-export sdir=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS  # source code directory (this script has to be in that directory)
+export wdir=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs  # work directory
+export sdir=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS  # source code directory (this script has to be in that directory)
 export tdir=$wdir/tmp  # temporary output directory
 export idirGCMdata=$wdir/GCMinput  # directory for uncorrected GCM data
-path_to_OBSdata=/g/data/er4/ISIMIP
+path_to_OBSdata=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep
 export idirOBSdata=$path_to_OBSdata  # directory for observational data
 export odirGCMdata=$wdir/GCMoutput  # directory for corrected GCM data
-path_to_GCMSource=/g/data/er4/ISIMIP
+path_to_GCMSource=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction
 export idirGCMsource=$path_to_GCMSource  # directory containing uncorrected GCM data to be pre-processed with interpolation script
-
+export settings_source=$sdir/exports.settings.functions.sh
+export randomtestVar="I am a random test variable"
 #Need to export the stuff for the cmsvlib functions
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
-
+export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 ###
 ### parameters
 ###
@@ -130,7 +129,7 @@ function get_experiment_period {
   *)
     local ye26=2099
     local ye45=2099
-    local ye85=2099;;
+    local ye85=2100;;
   esac  # 2
   case $1 in
   piControl)

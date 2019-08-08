@@ -11,10 +11,8 @@
 #PBS -e qlogs/get.coef.err
 
 
-#CHANGED WKS
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
-
-fullpath=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS
+#Dependent on settings file
+fullpath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS
 source ${fullpath}/exports.settings.functions.sh
 
 
@@ -43,10 +41,10 @@ Forests*|Nottingham*)
   echo observational_dataset $obsdataset not supported !!! exiting ... $(date)
   exit;;
 esac  # obsdataset
-idirobs=$idirOBSdata/$obsdataset
+idirobs=$idirOBSdata
 tdirobsi=$tdir/$obsdataset/idat
 tdirobsc=$tdir/$obsdataset/coef
-export ipathBCmask=$idirobs/$obsdataset.BCmask.$ncs
+export ipathBCmask=$idirOBSdata/$obsdataset.BCmask.$ncs
 exit_if_any_does_not_exist $ipathBCmask
 
 export referenceperiod=$2
@@ -87,15 +85,15 @@ fi
 
 export gcm=$5
 case $gcm in
-GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5)
+GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
   echo GCM $gcm;;
 *)
   echo GCM $gcm not supported !!! exiting ... $(date)
   exit;;
 esac  # gcm
 idirgcm=$idirGCMdata/$gcm
-tdirgcmi=$tdir/$gcm/$obsdataset/idat
-tdirgcmc=$tdir/$gcm/$obsdataset/coef
+tdirgcmi=$tdir/$obsdataset/idat
+tdirgcmc=$tdir/$obsdataset/coef
 echo
 
 echo idirgcm is $idirgcm
@@ -133,7 +131,10 @@ else
   idir=$tdirgcmi
   ifile=${var}_${frequency}_${gcm}_${expreference}_${realization}_${ysreference}0101-${yereference}1231
 fi  # lobs
+echo "\n CHECK FILE EXISTENCE\n"
 exit_if_any_does_not_exist $idir/$ifile.$ncs
+echo "\n Done \n"
+
 
 case $bcmethod in
 hurs|rsds)

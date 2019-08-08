@@ -12,12 +12,19 @@
 #THIS MUST BE RUN AFTER THE TASMAX and TASMIN
 module load cdo
 
-obs_dir=/g/data/er4/ISIMIP/AWAP
-obs_files=( 'tasmax_day_AWAP_19750101-20141231.nc4' 'tasmin_day_AWAP_19750101-20141231.nc4' )
-year_start=1975
-year_end=2014
+#Read directory & file
+obs_dir=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep
+obs_files=( 'tasmax_day_AWAP_19760101-20051231.nc4' 'tasmin_day_AWAP_19760101-20051231.nc4' )
+
+#Time period
+year_start=1976
+year_end=2005
+
+#Rename the variable
 newvar=tas
-output_file=/g/data/er4/ISIMIP/AWAP/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+output_file=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/${newvar}_day_AWAP_${year_start}0101-${year_end}1231
+
+#Original variable name
 oldvar=$obs_file
 chtime=12
 #scale and units change: (0.0036*24)
@@ -51,5 +58,6 @@ wait
 
 mv ${output_file}.nc4 ${output_file}.nc4_tmp
 wait
+
 cdo -f nc4c -z zip_9 selvar,$newvar ${output_file}.nc4_tmp ${output_file}.nc4
 wait

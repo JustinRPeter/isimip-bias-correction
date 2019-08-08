@@ -2,7 +2,6 @@
 ; gdl_routines/generic/ncdf2idl.pro
 ; of ISIMIP Fast Track Bias Correction Code
 
-
 pro nc2idl,ipath,opath,varname,NUMLANDPOINTS,land
   ; read data from NetCDF file
   id = NCDF_OPEN(ipath)
@@ -23,5 +22,14 @@ pro nc2idl,ipath,opath,varname,NUMLANDPOINTS,land
   endfor
   ncdfdata=0
 
-  cmsave,idldata,filename=opath
+  foo=0
+
+  CATCH, Error_status
+
+  IF Error_status NE 0 THEN BEGIN
+    PRINT, 'Error index: ', Error_status
+    PRINT, 'Error message: ', !ERROR_STATE.MSG
+    exit
+  ENDIF
+  SAVE,idldata,filename=opath
 end
