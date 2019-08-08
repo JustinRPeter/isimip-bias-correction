@@ -19,18 +19,18 @@ module load python/2.7.11
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
-refperiod=1975-2014
+refperiod=1975-2005
 var=pr
 bcmeth=pr
 GCM=CNRM-CM5
 rcp=rcp85
-appperiod=2006-2020
+appperiod=2006-2010
 time=midday
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/app.coef.02.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/app.coef.02.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
 
 
 

@@ -2,6 +2,8 @@
 ; of ISIMIP Fast Track Bias Correction Code
 
 ; HARD CODED LAT LON names - bit retarded?
+;print, "Preferences below!"
+;help, /PREFERENCES
 
 id = NCDF_OPEN(ipathBCmask)
 NCDF_VARGET,id,'BCmask',BCmask

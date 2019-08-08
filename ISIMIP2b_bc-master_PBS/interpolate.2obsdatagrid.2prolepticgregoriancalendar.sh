@@ -12,7 +12,7 @@
 #PBS -e qlogs/interpolate.2obsdatagrid.2prolepticgregoriancalendar.err
 
 #CHANGED WKS
-fullpath=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS
+fullpath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/
 source ${fullpath}/exports.settings.functions.sh
 
 
@@ -58,7 +58,7 @@ case $gcm in  # set input calendar
 GFDL-ESM2M|IPSL-CM5A-LR|MIROC5|NorESM1-M)
   echo GCM $gcm
   icalendar=365_day;;
-CMCC-CESM|CNRM-CM5)
+CMCC-CESM|CNRM-CM5|ACCESS1-0)
   echo GCM $gcm
   icalendar=standard;;
 HadGEM2-ES)
@@ -84,6 +84,8 @@ then
   echo period $per
   ysp=$(cut -d '-' -f 1 <<<$per)
   yep=$(cut -d '-' -f 2 <<<$per)
+  echo ysp is $ysp
+  echo yep is $yep
 else
   echo period $per has invalid format !!! exiting ... $(date)
   exit
@@ -116,7 +118,7 @@ ofile=${ovar}_${frequency}_${gcm}_${exp}_${realization}_$timeframe  # suffix is 
 
 # set paths to remap weights
 remapweightsdir=$tdir/remapweights
-remapgriddesfile=$idirOBSdata/$obsdataset/$obsdataset.griddes
+remapgriddesfile=$idirOBSdata/$obsdataset.griddes
 remapweightsfile=$remapweightsdir/$gcm.remap$remapmethod.$obsdataset$remapweightsfileextension
 [ ! -d $remapweightsdir ] && mkdir -p $remapweightsdir
 
@@ -183,7 +185,7 @@ case $icalendar in
     rm $odir/$ofile????.$ncs
   fi
   # turn 365_day into output calendar
-  $cdo setreftime,$tsp,day \
+  $cdo -L -setreftime,$tsp,day \
        -inttime,$tsp,1day \
        -setcalendar,$ocalendar \
        -settaxis,$tsp,1day $odir/$ofile.$ncs \
@@ -204,3 +206,6 @@ $ocalendar)
   echo time interpolation not supported for input calendar=$icalendar !!! exiting ... $(date)
   exit;;
 esac  # icalendar
+# cdo -f nc4c -z zip setreftime,1975-01-01,00:00:00,day -inttime,1975-01-01,00:00:00,1day -setcalendar,proleptic_gregorian -settaxis,1975-01-01,00:00:00,1day
+# $cdo -L -setreftime,1975-01-01,00:00:00,day -inttime,1975-01-01,00:00:00,1day -settaxis,1975-01-01,00:00:00,1day -setcalendar,proleptic_gregorian ../GCMinput/MIROC5/pr_day_MIROC5_historical_r1i1p1_19750101-19841231.nc4 tmp.nc4
+# cdo f nc4c -z zip -L -setreftime,1971-01-01,00:00:00,day -inttime,1971-01-01,00:00:00,1day -setcalendar,proleptic_gregorian -settaxis,1971-01-01,00:00:00,1day /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs/GCMinput/MIROC5/pr_day_MIROC5_historical_r1i1p1_19710101-19801231.nc4

@@ -25,7 +25,7 @@ echo expression is $exp
 #build up the string to mergetime:
 str=''
 for (( ii=year_start;ii<=year_end;ii++ )); do
-	str="$str ${obs_dir}/${obs_file}_${ii}.nc"	
+    str="$str ${obs_dir}/${obs_file}_${ii}.nc"
 done
 #merge time
 cdo -f nc4c -z zip_9 -mergetime $str ${output_file}.nc4
@@ -40,21 +40,21 @@ wait
 
 #if chtime not null:
 if [[ chtime =~ "12" ]]; then
-	mv ${output_file}.nc4 ${output_file}.nc4_tmp
-	cdo -f nc4c -z zip_9 -settaxis,${year_start}-01-01,12:00:00,day ${output_file}.nc4_tmp ${output_file}.nc4  	
-	wait
-	rm *_tmp
+    mv ${output_file}.nc4 ${output_file}.nc4_tmp
+    cdo -f nc4c -z zip_9 -settaxis,${year_start}-01-01,12:00:00,day ${output_file}.nc4_tmp ${output_file}.nc4  
+    wait
+    rm *_tmp
 elif [[ chtime =~ "0" ]]; then
-	mv ${output_file}.nc4 ${output_file}.nc4_tmp
-	cdo -f nc4c -z zip_9 -settaxis,${year_start}-01-01,00:00:00,day ${output_file}.nc4_tmp ${output_file}.nc4
-	wait
-	rm *_tmp
+    mv ${output_file}.nc4 ${output_file}.nc4_tmp
+    cdo -f nc4c -z zip_9 -settaxis,${year_start}-01-01,00:00:00,day ${output_file}.nc4_tmp ${output_file}.nc4
+    wait
+    rm *_tmp
 fi
 
 #if scale non null:
 if ! [[ $exp == '' ]]; then
-	mv ${output_file}.nc4 ${output_file}.nc4_tmp
-	cmd="cdo -f nc4c -z zip_9 ${exp} ${output_file}.nc4_tmp ${output_file}.nc4"
-	eval "${cmd}"
-	rm *_tmp
+    mv ${output_file}.nc4 ${output_file}.nc4_tmp
+    cmd="cdo -f nc4c -z zip_9 ${exp} ${output_file}.nc4_tmp ${output_file}.nc4"
+    eval "${cmd}"
+rm *_tmp
 fi

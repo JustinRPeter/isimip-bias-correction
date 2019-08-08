@@ -13,7 +13,7 @@
 
 #CHANGED WKS
 fullpath=/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS
-source ${fullpath}/exports.settings.functions.sh
+source ${fullpath}/exports.settings.functions_WS.sh
 
 
 # check input parameters
@@ -85,7 +85,7 @@ if [ $lobs -eq 0 ]
 then
   export gcm=$5
   case $gcm in
-  GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5)
+  GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
     echo GCM $gcm;;
   *)
     echo GCM $gcm not supported !!! exiting ... $(date)

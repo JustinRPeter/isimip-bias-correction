@@ -17,9 +17,10 @@ do
   cat > $spath << EOF
 #!/bin/bash
 
-#PBS -l walltime=4:00:00
+#PBS -l walltime=8:00:00
 #PBS -l ncpus=16
-#PBS -l mem=128gb
+#PBS -l mem=64gb
+#PBS -l software=idl
 #PBS -N bc1p5i$month
 #PBS -P er4
 ##PBS -M wendy.sharples@bom.gov.au
@@ -32,14 +33,15 @@ module load netcdf
 module load cdo
 module load nco
 module load gdl
-module load idl
+# module load idl
 module load pbs
+module load idl/8.6
 
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 
 echo ... converting data for month $month ...
 
-gdl <<GDLEOF
+idl <<GDLEOF
 ipathBCmask = '$ipathBCmask'
 .r $sdir/gdl/readBCmask.pro
 .r $sdir/gdl/isleap.pro

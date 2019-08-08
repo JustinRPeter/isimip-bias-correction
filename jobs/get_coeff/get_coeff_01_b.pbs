@@ -20,7 +20,7 @@ export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
 export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
 
 obsdata=AWAP
 variable=tasmax
@@ -28,7 +28,7 @@ refperiod=1975-2014
 bcmeth=tasmax
 gcm=CNRM-CM5
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction//ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff
 
 
 
