@@ -3,6 +3,16 @@ import yaml
 import io
 from flatten_dict import flatten
 
+def default_var_config():
+    return {'run_enabled' : False,
+            'obs_input_dir': "/path/path",
+            'gcm_input_dir': "/path/path",
+            'rcp': "rcp85",
+            'version': "latest"}
+
+default_vars = ['tasmin', 'tasmax', 'tas', 'rsds', 'pr', 'sfcWind']
+default_var_dict = {var: default_var_config() for var in default_vars}
+
 data = {'Directory Paths':
             {
             'main_working_dir': "/g/data"},
@@ -15,25 +25,10 @@ data = {'Directory Paths':
             {'CNRM-CM5': False,
             'MIROC5': False,
             'GFDL-ESM2M': False,
-            'ACCESS1-0': False},
-        'tasmin':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'tasmax':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'tas':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'rsds':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'pr':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'sfcWind':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"}}
+            'ACCESS1-0': False}
+        }
+
+data.update(default_var_dict)
 
 # Write YAML file
 def generate_config():

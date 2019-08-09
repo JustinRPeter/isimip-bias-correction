@@ -41,23 +41,25 @@ input_dir = stream["Directory Paths"]["main_working_dir"]
 gcm = get_gcm()
 get_variables()
 
+tasmin = VariableMeta(stream['tasmin']['obs_input_dir'], obs_file=tasmin_input_dir.split("/")[-1])
+
 tasmin_input_dir = stream["tasmin"]["obs_input_dir"]
-tasmin_input_file = tasmin_input_dir.split("/")[-1]
+tasmin_obs_file = tasmin_input_dir.split("/")[-1]
 
 tasmax_input_dir = stream["tasmax"]["obs_input_dir"]
-tasmax_input_file = tasmax_input_dir.split("/")[-1]
+tasmax_obs_file = tasmax_input_dir.split("/")[-1]
 
 tas_input_dir = stream["tas"]["obs_input_dir"]
-tas_input_file = tas_input_dir.split("/")[-1]
+tas_obs_file = tas_input_dir.split("/")[-1]
 
 rsds_input_dir = stream["rsds"]["obs_input_dir"]
-rsds_input_file = rsds_input_dir.split("/")[-1]
+rsds_obs_file = rsds_input_dir.split("/")[-1]
 
 pr_input_dir = stream["pr"]["obs_input_dir"]
-pr_input_file = pr_input_dir.split("/")[-1]
+pr_obs_file = pr_input_dir.split("/")[-1]
 
-sfcWind_obs_input_dir = stream["sfcWind"]["obs_input_dir"]
-sfcWind_obs_input_file = sfcWind_input_dir.split("/")[-1]
+sfcWind_input_dir = stream["sfcWind"]["obs_input_dir"]
+sfcWind_obs_file = sfcWind_input_dir.split("/")[-1]
 
 # Time frames
 year_start = stream["Time Periods"]["start_year"]
