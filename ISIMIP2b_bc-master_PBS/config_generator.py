@@ -8,7 +8,9 @@ def default_var_config():
             'obs_input_dir': "/path/path",
             'gcm_input_dir': "/path/path",
             'rcp': "rcp85",
-            'version': "latest"}
+            'version': "latest",
+            'projection_rcp': "rcp85",
+            'projection_version': "latest"}
 
 default_vars = ['tasmin', 'tasmax', 'tas', 'rsds', 'pr', 'sfcWind']
 default_var_dict = {var: default_var_config() for var in default_vars}
@@ -25,10 +27,11 @@ data = {'Directory Paths':
             {'CNRM-CM5': False,
             'MIROC5': False,
             'GFDL-ESM2M': False,
-            'ACCESS1-0': False}
+            'ACCESS1-0': False},
+        'Variables':{}
         }
 
-data.update(default_var_dict)
+data['Variables'].update(default_var_dict)
 
 # Write YAML file
 def generate_config():
