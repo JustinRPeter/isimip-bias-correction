@@ -1,8 +1,8 @@
 #!/bin/bash
-   
+
 #PBS -q express
 #PBS -P er4
-#PBS -N job_getcoeff_1_c_5
+#PBS -N job_getcoeff_1_c_4
 #PBS -l walltime=1:00:00
 ##PBS -l nodes=1
 #PBS -l ncpus=16
@@ -21,11 +21,8 @@ source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b
 
 obsdata=AWAP
 variable=sfcWind
-refperiod=1975-2014
+refperiod=1976-2005
 bcmeth=sfcWind
 gcm=CNRM-CM5
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff check
-
-
-

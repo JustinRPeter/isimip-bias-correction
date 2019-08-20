@@ -76,18 +76,14 @@ def split_files(gcm, var):
 
 
 def define_variables(v, reference_period):
-    # Create tuple structures
     FileInfo = namedtuple('FileInfo', ['data_path', 'file_name', 'gcm_output_path'])
     DateInfo = namedtuple('DateInfo', ['year_start', 'year_end', 'decade', 'year_start_app', 'year_end_app'])
     VersionInfo = namedtuple('VersionInfo', ['rcp', 'ver'])
 
-    # Declare path variables
     gcm_output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/{gcm}"
     decade = str(math.floor(years['start_year']/10)*10)
 
-    # Populate namedtuples
-
-    #Check if data is for reference/projection period (True/False - Flag)
+    #Check if data is for reference period (True/False - Flag)
     if reference_period:
         file_info = FileInfo(f"{v.gcm_dir}/{v.rcp}/day/atmos/day/r1i1p1/{v.version}/{v.name}", f"{v.name}_day_{gcm}_{v.rcp}_r1i1p1_", gcm_output_path)
         date_info = DateInfo(years['start_year'],  years['end_year'], decade, f"{years['start_year']}0101", f"{years['end_year']}1231")
