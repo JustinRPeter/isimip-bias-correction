@@ -69,9 +69,8 @@ def process_files(filteredfiles, finfo, dinfo):
 
 # Split files if rcp is historical to prepare for isimip interp
 def split_files(gcm, var):
-    yst = [19710101, 19810101, 19910101, 20010101]
-    yen = [19801231, 19901231, 20001231, 20051231]
-    for i, j in zip(yst, yen):
+    start_years, end_years = year_split_decade(years['start_year', 'end_year')
+    for i, j in zip(start_years, end_years):
             exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{i},{j} ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_19710101-20051231.nc ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_{i}-{j}.nc")
 
 
