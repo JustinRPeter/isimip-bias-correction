@@ -53,13 +53,33 @@ def year_split_decade(year_start, year_end):
 
     return start_years_list, end_years_list
 
+# Time frames
+def get_dict(dict_name, file):
+    return file.get(dict_name)
+
 def validate_year_range(dictionary):
     if(dictionary['Time Periods']['start_year'] > dictionary['Time Periods']['end_year']):
         sys.exit('ERROR: Start year is later than end year!')
 
-# Time frames
-def get_dict(dict_name, file):
-    return file.get(dict_name)
+def set_env_var(var_name, var_data):
+    os.environ[var_name] = var_data
+
+def init_env_vars():
+    for i, j in env_vars.items():
+        set_env_var(i, j)
+
+wdir = '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs'
+sdir = '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS'
+env_vars = {'wdir': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs',
+        'sdir': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS',
+        'tdir': f'{wdir}/tmp',
+        'idirGCMdata': f'{wdir}/GCMinput',
+        'idirOBSdata': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep',
+        'odirGCMdata': f'{wdir}/GCMoutput',
+        'idirGCMsource': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction',
+        'settings_source': f'{sdir}/exports.settings.functions.sh',
+        'idirGCMsource': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro'
+        }
 
 # Retrieve all yielded information from get_active_vars()
 active_vars = [data_store.Vars(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7])
