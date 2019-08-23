@@ -50,10 +50,11 @@ def year_split_decade(year_start, year_end):
             end_years_list.append(year_start + 9)
             year_start +=10
             decade_qty -= 1
+
     return start_years_list, end_years_list
 
 def validate_year_range(dictionary):
-    if(dictionary['start_year'] > dictionary['end_year']):
+    if(dictionary['Time Periods']['start_year'] > dictionary['Time Periods']['end_year']):
         sys.exit('ERROR: Start year is later than end year!')
 
 # Time frames

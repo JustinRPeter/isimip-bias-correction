@@ -69,7 +69,7 @@ def process_files(filteredfiles, finfo, dinfo):
 
 # Split files if rcp is historical to prepare for isimip interp
 def split_files(gcm, var):
-    start_years, end_years = year_split_decade(years['start_year', 'end_year')
+    start_years, end_years = year_split_decade(years['start_year'], years['end_year'])
     for i, j in zip(start_years, end_years):
             exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{i},{j} ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_19710101-20051231.nc ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_{i}-{j}.nc")
 
@@ -80,14 +80,15 @@ def define_variables(v, reference_period):
     VersionInfo = namedtuple('VersionInfo', ['rcp', 'ver'])
 
     gcm_output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/{gcm}"
-    decade = str(math.floor(years['start_year']/10)*10)
 
     #Check if data is for reference period (True/False - Flag)
     if reference_period:
+        decade = str(math.floor(years['start_year']/10)*10)
         file_info = FileInfo(f"{v.gcm_dir}/{v.rcp}/day/atmos/day/r1i1p1/{v.version}/{v.name}", f"{v.name}_day_{gcm}_{v.rcp}_r1i1p1_", gcm_output_path)
         date_info = DateInfo(years['start_year'],  years['end_year'], decade, f"{years['start_year']}0101", f"{years['end_year']}1231")
         version_info = VersionInfo(v.rcp, v.version)
     else:
+        decade = str(math.floor(years['projection_start']/10)*10)
         file_info = FileInfo(f"{v.gcm_dir}/{v.projection_rcp}/day/atmos/day/r1i1p1/{v.projection_version}/{v.name}", f"{v.name}_day_{gcm}_{v.projection_rcp}_r1i1p1_", gcm_output_path)
         date_info = DateInfo(years['projection_start'],  years['projection_end'], decade, f"{years['projection_start']}0101", f"{years['projection_end']}1231")
         version_info = VersionInfo(v.projection_rcp, v.projection_version)

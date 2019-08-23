@@ -5,9 +5,9 @@ from flatten_dict import flatten
 
 def default_var_config():
     return {'run_enabled' : False,
-            'obs_input_dir': "/path/path",
-            'gcm_input_dir': "/path/path",
-            'rcp': "rcp85",
+            'obs_input_dir': "/g/data/er4/data/CLIMATE",
+            'gcm_input_dir': "/g/data/al33",
+            'rcp': "historical",
             'version': "latest",
             'projection_rcp': "rcp85",
             'projection_version': "latest"}
@@ -22,7 +22,7 @@ data = {'Directory Paths':
             {'start_year': 1976,
             'end_year': 2005,
             'projection_start': 2006,
-            'projection_end': 2100},
+            'projection_end': 2099},
         'GCM':
             {'CNRM-CM5': False,
             'MIROC5': False,
