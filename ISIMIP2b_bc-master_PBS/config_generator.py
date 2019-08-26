@@ -5,6 +5,7 @@ from flatten_dict import flatten
 
 def default_var_config():
     return {'run_enabled' : False,
+            'obs_data_type' : "AWAP",
             'obs_input_dir': "/g/data/er4/data/CLIMATE",
             'gcm_input_dir': "/g/data/al33",
             'rcp': "historical",

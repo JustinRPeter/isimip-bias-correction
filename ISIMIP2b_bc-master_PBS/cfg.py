@@ -31,9 +31,7 @@ def get_gcm(dictionary):
 def get_active_vars(dictionary):
      for key, v in dictionary['Variables'].items():
             if v['run_enabled']:
-                yield(key, v['run_enabled'], v['obs_input_dir'],
-                        v['gcm_input_dir'], v['rcp'], v['version'],
-                        v['projection_rcp'], v['projection_version'])
+                yield(key, v['run_enabled'], v['obs_data_type'], v['obs_input_dir'], v['gcm_input_dir'], v['rcp'], v['version'], v['projection_rcp'], v['projection_version'])
 
 # Dyanmically chunk years into 10 year periods inclusive of firs and last year
 def year_split_decade(year_start, year_end):
@@ -82,7 +80,7 @@ env_vars = {'wdir': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-corre
         }
 
 # Retrieve all yielded information from get_active_vars()
-active_vars = [data_store.Vars(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7])
+active_vars = [data_store.Vars(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8])
                 for i in list(get_active_vars(get_config()))]
 
 validate_year_range(get_config())
