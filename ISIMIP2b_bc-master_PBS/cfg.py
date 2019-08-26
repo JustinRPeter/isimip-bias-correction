@@ -33,7 +33,7 @@ def get_active_vars(dictionary):
             if v['run_enabled']:
                 yield(key, v['run_enabled'], v['obs_data_type'], v['obs_input_dir'], v['gcm_input_dir'], v['rcp'], v['version'], v['projection_rcp'], v['projection_version'])
 
-# Dyanmically chunk years into 10 year periods inclusive of firs and last year
+# Dynamically chunk years into 10 year periods inclusive of first and last year
 def year_split_decade(year_start, year_end):
     decade_qty = ((year_end - year_start ) + 1)/10
     start_years_list = []
