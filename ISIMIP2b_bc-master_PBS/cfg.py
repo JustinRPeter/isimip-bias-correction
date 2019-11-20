@@ -1,114 +1,86 @@
 #!/usr/bin/env python3
-import test
-import yaml
 import io
-import sys
+import math
 import os
 import subprocess
+import sys
+import yaml
+
+import config_generator
+import data_store
 
 # Safely load file and ensure it is a readable format. If not exit.
-Stream = None
-try:
-    stream = open('config.yaml', 'r')
-    stream = yaml.safe_load(stream)
-except:
-    print("File failed to open!")
+
+def get_config():
+    try:
+        stream = open('config.yaml', 'r')
+        stream = yaml.safe_load(stream)
+        return stream
+    except:
+        print("File failed to open!")
 
 # Get GCM from config file, throw an error and exit if no value set to true
-def get_gcm():
+def get_gcm(dictionary):
     print("WARNING: Finding first instance of 'true' value in GCM config. If multiple instances are found only the first instance will be used!")
-    for key, val in stream.items():
-        if (key == "GCM"):
-            for key2, val2 in val.items():
-                if(str(val2).lower() == "true"):
-                    return key2
+    for key, val in dictionary['GCM'].items():
+        if val:
+            return key
     raise SystemExit("ERROR: Script quitting!\n::No GCM value set to TRUE in the config!")
 
-# Get variables throw an error if no value has been selected
-variables = ['tasmin', 'tasmax', 'tas', 'rsds', 'pr', 'sfcWind']
-def get_variables():
-    for i in list(variables):
-        if(str(stream[i]["run_enabled"]).lower() == 'false'):
-            variables.remove(i)
-    if not variables:
-        raise SystemExit("ERROR: Script quitting!\n::'run_enabled' must be set to TRUE for at least one variable!")
+# Retrieve variables that are run-enabled from the config
+def get_active_vars(dictionary):
+     for key, v in dictionary['Variables'].items():
+            if v['run_enabled']:
+                yield(key, v['run_enabled'], v['obs_data_type'], v['obs_input_dir'], v['gcm_input_dir'], v['rcp'], v['version'], v['projection_rcp'], v['projection_version'])
 
-# Directory Paths
-input_dir = stream["Directory Paths"]["main_working_dir"]
-#output_dir = stream["Directory Paths"]["output_dir"]
+# Dynamically chunk years into 10 year periods inclusive of first and last year
+def year_split_decade(year_start, year_end):
+    decade_qty = ((year_end - year_start ) + 1)/10
+    start_years_list = []
+    end_years_list = []
 
-# GCM & Variables
-gcm = get_gcm()
-get_variables()
+    for i in range(ceil(decade_qty)):
+        if (decade_qty <= 1):
+            start_years_list.append(year_start)
+            end_years_list.append(year_start + int((10*decade_qty)-1))
+        else:
+            start_years_list.append(year_start)
+            end_years_list.append(year_start + 9)
+            year_start +=10
+            decade_qty -= 1
 
-tasmin_input_dir = stream["tasmin"]["obs_input_dir"]
-tasmin_input_file = tasmin_input_dir.split("/")[-1]
-
-tasmax_input_dir = stream["tasmax"]["obs_input_dir"]
-tasmax_input_file = tasmax_input_dir.split("/")[-1]
-
-tas_input_dir = stream["tas"]["obs_input_dir"]
-tas_input_file = tas_input_dir.split("/")[-1]
-
-rsds_input_dir = stream["rsds"]["obs_input_dir"]
-rsds_input_file = rsds_input_dir.split("/")[-1]
-
-pr_input_dir = stream["pr"]["obs_input_dir"]
-pr_input_file = pr_input_dir.split("/")[-1]
-
-sfcWind_obs_input_dir = stream["sfcWind"]["obs_input_dir"]
-sfcWind_obs_input_file = sfcWind_input_dir.split("/")[-1]
+    return start_years_list, end_years_list
 
 # Time frames
-year_start = stream["Time Periods"]["start_year"]
-year_end = stream["Time Periods"]["end_year"]
-projection_start = stream["Time Periods"]["projection_start"]
-projection_end = stream["Time Periods"]["projection_end"]
+def get_dict(dict_name, file):
+    return file.get(dict_name)
 
+def validate_year_range(dictionary):
+    if(dictionary['Time Periods']['start_year'] > dictionary['Time Periods']['end_year']):
+        sys.exit('ERROR: Start year is later than end year!')
 
+def set_env_var(var_name, var_data):
+    os.environ[var_name] = var_data
 
-#########################################
-#
-# CODE EXPERIMENTATION to increase overall
-# robustness, error handling & odd edge cases
-#
-#########################################
-#stream = list(stream.items())[1]
-#for i in stream:
-    #if (str(stream[num].get(i)).lower() == "false"):
-    #    print(stream[num].keys())
-    #    print(i)
+def init_env_vars():
+    for i, j in env_vars.items():
+        set_env_var(i, j)
 
-# def populate_variables():
-#     stream_list = list(stream.keys())
-#     for num in range(len(stream_list)):
-#         print(num)
-#         print(stream_list[num].value())
-#         # for i in stream_list[num]:
-#         #     print(i)
-#         #     if (str(stream_list[num].get(i)).lower() == "false"):
-#         #         print(stream_list[num].keys())
-#         #         print(i)
+wdir = '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs'
+sdir = '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS'
+env_vars = {'wdir': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs',
+        'sdir': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS',
+        'tdir': f'{wdir}/tmp',
+        'idirGCMdata': f'{wdir}/GCMinput',
+        'idirOBSdata': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep',
+        'odirGCMdata': f'{wdir}/GCMoutput',
+        'idirGCMsource': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction',
+        'settings_source': f'{sdir}/exports.settings.functions.sh',
+        'idirGCMsource': '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro'
+        }
 
-#populate_variables()
-# print(input_dir)
+# Retrieve all yielded information from get_active_vars()
+active_vars = [data_store.Vars(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8])
+                for i in list(get_active_vars(get_config()))]
 
-# list(mydict.keys())[list(mydict.values()).index(16)])
-
-
-
-#for i, num in stream.items():
-#        print(num)
-#    for j, value in num.items():
-#        print(j)
-#        print(value)
-
-# i is the main listings, GCM, direct etc
-# num is each of the sub dictionaries..
-
-
-# variables = (rsds, pr, sfcWind, tas, tasmin, tasmax)
-# for variable in variables:
-#     result = variable()
-#     if result:
-#         return result
+validate_year_range(get_config())

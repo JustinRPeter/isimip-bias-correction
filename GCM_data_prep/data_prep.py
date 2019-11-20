@@ -1,95 +1,110 @@
 #!/usr/bin/env python3
-import subprocess
+from collections import namedtuple
 import glob
 import math
-import sys
 import os
+import subprocess
+import sys
 
-# Establish execution function
+import cfg
+
+# Declare fixed gloabl variables
+config = cfg.get_config()
+gcm = cfg.get_gcm(config)
+years = cfg.get_dict('Time Periods', config)
+
+# Establish command-line execution function
 def exec_cmd(run_string):
     subprocess.run(run_string.split())
 
-# argsArr1= ['1976', '2005', 'CNRM-CM5', '/g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5',
-#            'historical', 'pr', 'v20120530', 'Y']
-# argsArr1= ['1976', '2005', 'MICROC5', '/g/data/al33/replicas/CMIP5/combined/MIROC/MIROC5',
-#            'historical', 'pr', 'v20120710', 'Y']
-# argsArr1 = ['1976', '2005', 'GFDL-ESM2M', '/g/data/al33/replicas/CMIP5/combined/NOAA-GFDL/GFDL-ESM2M',
-#            'historical', 'pr', 'v20111228', 'Y']
-# argsArr= ['1976', '2005', 'ACCESS1-0', '/g/data/rr3/publications/CMIP5/output1/CSIRO-BOM/ACCESS1-0',
-#            'historical', 'pr', 'latest', 'Y']
-# Test implementation
-# year_start = argsArr[0]
-# year_end = argsArr[1]
-# gcm = argsArr[2]
-# input_path = argsArr[3]
-# rcp = argsArr[4]
-# var = argsArr[5]
-# ver = argsArr[6]
-# merge = argsArr[7]
+# Retrieve file listing and copy to working directory
+def get_files(finfo, dinfo, vinfo):
+    # Indexing variables for tests
+    year_start_idx = 0
+    year_end_idx = 0
+    year_check = 0
 
-# Take command-line arguments
-year_start = sys.argv[1]
-year_end = sys.argv[2]
-gcm = sys.argv[3]
-input_path = sys.argv[4]
-rcp = sys.argv[5]
-var = sys.argv[6]
-ver = sys.argv[7]
-merge = sys.argv[8]
+    # Retrieve and sort files
+    filelist = (glob.glob(f"{finfo.data_path}/*{vinfo.rcp}*"))
+    filelist.sort()
+    filteredfiles = []
+    print(f"{finfo.data_path}/*{vinfo.rcp}*")
 
-# Append with appropriate suffix
-year_start_app = year_start + "0101"
-year_end_app = year_end + "1231"
+    # Loop through and find the earliest RELEVANT year to the specified time
+    for i,val in enumerate(filelist):
+        if(int(filelist[i][-20:-16]) <= int(dinfo.decade) and int(filelist[i][-20:-16]) > year_check):
+            year_check = int(filelist[i][-20:-16])
+            year_start_idx = i
 
-# Declare path variables
-data_path = f"{input_path}/{rcp}/day/atmos/day/r1i1p1/{ver}/{var}"
-file_name = f"{var}_day_{gcm}_{rcp}_r1i1p1_"
-output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/{gcm}"
-year_decade = str(math.floor(int(year_start)/10)*10)
+    # Loop through and find the latest RELEVANT year to the specified time
+    for i, val in enumerate(filelist, start = year_start_idx):
+        if(int(filelist[i][-11:-7]) >= int(dinfo.year_end)):
+            year_end_idx = i
+            break
 
-# Retrieve and sort files
-filelist = (glob.glob(data_path + "/" + "*" + rcp + "*"))
-filelist.sort()
-filteredfiles = []
+    # Add all items to a NEW list than can be run through to get GCM data
+    for x in range(year_start_idx, year_end_idx+1):
+        filteredfiles.append(filelist[x])
 
-# Indexing variables for tests
-year_start_idx = 0
-year_end_idx = 0
-year_check = 0
+    # Copy file to working directory
+    for x in filteredfiles:
+        print(f"Copying file: {x}")
+        exec_cmd(f"cp {x} {os.getcwd()}")
 
-# Loop through and find the earliest RELEVANT year to the specified time
-for i,val in enumerate(filelist):
-    if(int(filelist[i][-20:-16]) <= int(year_decade) and int(filelist[i][-20:-16]) > year_check):
-        year_check = int(filelist[i][-20:-16])
-        year_start_idx = i
+    return filteredfiles
 
-# Loop through and find the latest RELEVANT year to the specified time
-for i, val in enumerate(filelist, start = year_start_idx):
-    if(int(filelist[i][-11:-7]) >= int(year_end)):
-        year_end_idx = i
-        break
+# Get file output - execute muliple CDO commands
+def process_files(filteredfiles, finfo, dinfo):
+    # Generate the output folder if it doesn't exist, then merge relevant files into a single output
+    exec_cmd(f"mkdir -p {finfo.gcm_output_path}")
+    print(f"Merging files then selecting date range from {dinfo.year_start} to {dinfo.year_end}")
+    exec_cmd(f"cdo -f nc4c -z zip_9 -mergetime {' '.join(filteredfiles)} {os.getcwd()}/tmp_{file_info.file_name}merged.nc")
+    exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{dinfo.year_start_app},{dinfo.year_end_app} {os.getcwd()}/tmp_{finfo.file_name}merged.nc {finfo.gcm_output_path}/{finfo.file_name}{dinfo.year_start_app}-{dinfo.year_end_app}.nc")
 
-# Add all items to a NEW list than can be run through to get GCM data
-for x in range(year_start_idx, year_end_idx+1):
-    filteredfiles.append(filelist[x])
+    # Clean-up tmp files
+    for x in filteredfiles:
+        if(os.path.basename(x) in " ".join(glob.glob(f"{os.getcwd()}/*"))):
+            exec_cmd(f"rm {os.getcwd()}/{os.path.basename(x)}")
+    exec_cmd(f"rm {os.getcwd()}/tmp_{finfo.file_name}merged.nc")
 
-# Copy file to working directory
-for x in filteredfiles:
-    exec_cmd(f"echo copying file: {x}")
-    exec_cmd(f"cp {x} {os.getcwd()}")
+# Split files if rcp is historical to prepare for isimip interp
+def split_files(gcm, var):
+    start_years, end_years = year_split_decade(years['start_year'], years['end_year'])
+    for i, j in zip(start_years, end_years):
+            exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{i},{j} ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_19710101-20051231.nc ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_{i}-{j}.nc")
 
-# Generate the output folder if it doesn't exist
-exec_cmd(f"mkdir -p {output_path}")
 
-# If merge is 'Y'/'y' combine all the input files into a single input
-if (merge.lower() == "y"):
-    exec_cmd(f"echo Merging files then selecting date range from {year_start} to {year_end}")
-    exec_cmd(f"cdo -f nc4c -z zip_9 -mergetime {' '.join(filteredfiles)} {os.getcwd()}/tmp_{file_name}merged.nc")
+def define_variables(v, reference_period):
+    FileInfo = namedtuple('FileInfo', ['data_path', 'file_name', 'gcm_output_path'])
+    DateInfo = namedtuple('DateInfo', ['year_start', 'year_end', 'decade', 'year_start_app', 'year_end_app'])
+    VersionInfo = namedtuple('VersionInfo', ['rcp', 'ver'])
 
-exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{year_start}0101,{year_end}1231 {os.getcwd()}/tmp_{file_name}merged.nc {output_path}/{file_name}{year_start_app}-{year_end_app}.nc")
+    gcm_output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/{gcm}"
 
-# Clean-up resources
-for x in filteredfiles:
-    if(os.path.basename(x) in " ".join(glob.glob(f"{os.getcwd()}/*"))):
-        exec_cmd(f"rm {os.getcwd()}/{os.path.basename(x)}")
-exec_cmd(f"rm {os.getcwd()}/tmp_{file_name}merged.nc")
+    #Check if data is for reference period (True/False - Flag)
+    if reference_period:
+        decade = str(math.floor(years['start_year']/10)*10)
+        file_info = FileInfo(f"{v.gcm_dir}/{v.rcp}/day/atmos/day/r1i1p1/{v.version}/{v.name}", f"{v.name}_day_{gcm}_{v.rcp}_r1i1p1_", gcm_output_path)
+        date_info = DateInfo(years['start_year'],  years['end_year'], decade, f"{years['start_year']}0101", f"{years['end_year']}1231")
+        version_info = VersionInfo(v.rcp, v.version)
+    else:
+        decade = str(math.floor(years['projection_start']/10)*10)
+        file_info = FileInfo(f"{v.gcm_dir}/{v.projection_rcp}/day/atmos/day/r1i1p1/{v.projection_version}/{v.name}", f"{v.name}_day_{gcm}_{v.projection_rcp}_r1i1p1_", gcm_output_path)
+        date_info = DateInfo(years['projection_start'],  years['projection_end'], decade, f"{years['projection_start']}0101", f"{years['projection_end']}1231")
+        version_info = VersionInfo(v.projection_rcp, v.projection_version)
+
+    return (file_info, date_info, version_info)
+
+# Run main script functions
+if __name__ == '__main__':
+    for v in cfg.active_vars:
+        # Prepare GCM data for reference period
+        file_info, date_info, version_info = define_variables(v, True)
+        files = get_files(file_info, date_info, version_info)
+        process_files(files, file_info, date_info)
+        split_files(gcm, v.name)
+
+        # Prepare GCM data for projection period
+        file_info, date_info, version_info = define_variables(v, False)
+        files = get_files(file_info, date_info, version_info)
+        process_files(files, file_info, date_info)

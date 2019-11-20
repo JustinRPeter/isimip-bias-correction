@@ -237,6 +237,8 @@ tdirgcmc=$tdir/$gcm/$obsdataset/coef
 tdirgcmo=$tdir/$gcm/$obsdataset/odat
 odirgcm=$odirGCMdata/$gcm/$obsdataset
 
+mkdir -p $tdirgcmi
+
 
 
 # set path to spatial mask for bias correction

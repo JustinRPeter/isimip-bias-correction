@@ -32,7 +32,7 @@ pr_total=pr_c
 
 ; check for negative values in GCM data
 print,'checking for negative values in input data ...'
-IF (min(pr_c) LT -1e-5) THEN BEGIN
+IF (min(pr_c) LT -1e-6) THEN BEGIN
    print,'negative values in GCM input data !!! exiting ...'
    STOP
 ENDIF

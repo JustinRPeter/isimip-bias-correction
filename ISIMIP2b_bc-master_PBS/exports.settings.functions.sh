@@ -124,11 +124,11 @@ function get_experiment_period {
     local ye85=2299;;
   HadGEM2-ES|MIROC5)
     local ye26=2299
-    local ye45=2099
-    local ye85=2099;;
+    local ye45=2100
+    local ye85=2100;;
   *)
-    local ye26=2099
-    local ye45=2099
+    local ye26=2100
+    local ye45=2100
     local ye85=2100;;
   esac  # 2
   case $1 in
@@ -141,7 +141,7 @@ function get_experiment_period {
   rcp45)
     local ys=2006; local ye=$ye45;;
   rcp60)
-    local ys=2006; local ye=2099;;
+    local ys=2006; local ye=2100;;
   rcp85)
     local ys=2006; local ye=$ye85;;
   *)

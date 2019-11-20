@@ -38,11 +38,11 @@ idldata=0
 
 ; check for negative values in input data
 print,'checking for negative values in input data ...'
-IF (min(pr_e) LT -1e-5) THEN BEGIN
+IF (min(pr_e) LT -1e-6) THEN BEGIN
    print,'negative values in GCM data !!! exiting ...'
    STOP
 ENDIF
-IF (min(pr_o) LT -1e-5) THEN BEGIN
+IF (min(pr_o) LT -1e-6) THEN BEGIN
    print,'negative values in OBS data !!! exiting ...'
    STOP
 ENDIF

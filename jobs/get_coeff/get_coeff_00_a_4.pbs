@@ -24,7 +24,7 @@ source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b
 
 obsdata=AWAP
 variable=pr
-refperiod=1975-2005
+refperiod=1976-2005
 bcmeth=pr
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_00.sh $obsdata $refperiod $variable $bcmeth

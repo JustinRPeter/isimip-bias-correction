@@ -3,6 +3,19 @@ import yaml
 import io
 from flatten_dict import flatten
 
+def default_var_config():
+    return {'run_enabled' : False,
+            'obs_data_type' : "AWAP",
+            'obs_input_dir': "/g/data/er4/data/CLIMATE",
+            'gcm_input_dir': "/g/data/al33",
+            'rcp': "historical",
+            'version': "latest",
+            'projection_rcp': "rcp85",
+            'projection_version': "latest"}
+
+default_vars = ['tasmin', 'tasmax', 'tas', 'rsds', 'pr', 'sfcWind']
+default_var_dict = {var: default_var_config() for var in default_vars}
+
 data = {'Directory Paths':
             {
             'main_working_dir': "/g/data"},
@@ -10,30 +23,16 @@ data = {'Directory Paths':
             {'start_year': 1976,
             'end_year': 2005,
             'projection_start': 2006,
-            'projection_end': 2100},
+            'projection_end': 2099},
         'GCM':
             {'CNRM-CM5': False,
             'MIROC5': False,
             'GFDL-ESM2M': False,
             'ACCESS1-0': False},
-        'tasmin':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'tasmax':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'tas':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'rsds':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'pr':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"},
-        'sfcWind':
-            {'run_enabled' : False,
-            'obs_input_dir': "/path/path"}}
+        'Variables':{}
+        }
+
+data['Variables'].update(default_var_dict)
 
 # Write YAML file
 def generate_config():

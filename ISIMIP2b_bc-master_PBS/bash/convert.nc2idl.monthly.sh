@@ -36,8 +36,8 @@ do
 #PBS -P er4
 ##PBS -M wendy.sharples@bom.gov.au
 
-#PBS -o /g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs/app_coeff/logoutput/$sfile.out
-#PBS -e /g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/jobs/app_coeff/logoutput/$sfile.err
+#PBS -o $qsubedlogs/$sfile.out
+#PBS -e $qsubedlogs/$sfile.err
 
 module purge
 module load cdo
