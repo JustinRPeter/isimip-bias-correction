@@ -13,19 +13,19 @@ module load netcdf
 module load nco
 module load cdo
 module load gdl
-module load idl
+module load idl/8.4
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
 variable=tas
-refperiod=1975-2014
+refperiod=1976-2005
 bcmeth=tas
-gcm=CNRM-CM5
+gcm=GFDL-ESM2M
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff check
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff check
 
 
 

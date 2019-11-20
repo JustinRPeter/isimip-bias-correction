@@ -3,7 +3,8 @@
 #PBS -q express
 #PBS -P er4
 #PBS -N job_appcoeff_1
-#PBS -l walltime=24:00:00
+#PBS -l walltime=8:00:00
+#PBS -lsoftware=idl
 ##PBS -l nodes=1
 #PBS -l ncpus=16
 #PBS -l mem=64gb
@@ -13,22 +14,22 @@ module load netcdf
 module load nco
 module load cdo
 module load gdl
-module load idl
+module load idl/8.4
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
-refperiod=1975-2014
+refperiod=1976-2005
 var=tas
 bcmeth=tas
-GCM=CNRM-CM5
-rcp=rcp85
-appperiod=2006-2020
+GCM=CCAM-r3355-CNRM-CM5
+rcp=historical
+appperiod=1960-2005
 time=midday
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/app.coef.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/app.coef.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
 
 
 

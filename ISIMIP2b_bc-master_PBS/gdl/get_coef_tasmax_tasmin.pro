@@ -10,9 +10,9 @@ print,'using '+ipathgcm+', '+ipathgcmtas+' and '+ipathobs+', '+ipathobstas+' to 
 
 
 ; read OBS data
-cmrestore,ipathobs
+RESTORE,ipathobs
 tminmax_o=idldata
-cmrestore,ipathobstas
+RESTORE,ipathobstas
 print,'checking for negative values in input data ...'
 IF (min(tminmax_o) LT 0.0) THEN BEGIN
    print,'negative values in OBS tasmax/tasmin data !!! exiting ...'
@@ -24,12 +24,12 @@ IF (min(idldata) LT 0.0) THEN BEGIN
 ENDIF
 tminmax_minus_tas_o = tminmax_o - idldata
 tminmax_o=0
-
+print, 'Line 27 Done'
 
 ; read GCM data
-cmrestore,ipathgcm
+RESTORE,ipathgcm
 tminmax_e=idldata
-cmrestore,ipathgcmtas
+RESTORE,ipathgcmtas
 IF (min(tminmax_e) LT 0.0) THEN BEGIN
    print,'negative values in GCM tasmax/tasmin data !!! exiting ...'
    STOP
@@ -42,6 +42,7 @@ print,'... check passed'
 tminmax_minus_tas_e = tminmax_e - idldata
 tminmax_e=0
 idldata=0
+print, 'Line 45 DONE'
 
 
 ; check for tasmin above tas and tasmax below tas
@@ -50,6 +51,8 @@ IF (min(minormax*tminmax_minus_tas_o) LT 0.0) THEN BEGIN
    print,'tasmax/tasmin </> tas in OBS data !!! exiting ...'
    STOP
 ENDIF
+print, 'We got here! :)'
+print, min(minormax*tminmax_minus_tas_e)
 IF (min(minormax*tminmax_minus_tas_e) LT 0.0) THEN BEGIN
    print,'tasmax/tasmin </> tas in GCM data !!! exiting ...'
    STOP
@@ -60,5 +63,5 @@ print,'... check passed'
 a_td = mean(tminmax_minus_tas_o,DIMENSION=2) / mean(tminmax_minus_tas_e,DIMENSION=2)
 
 
-cmsave,a_td,filename=opath
+SAVE,a_td,filename=opath
 end

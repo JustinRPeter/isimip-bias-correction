@@ -55,10 +55,10 @@ esac
 
 gcm=$3
 case $gcm in  # set input calendar
-GFDL-ESM2M|IPSL-CM5A-LR|MIROC5|NorESM1-M)
+GFDL-ESM2M|IPSL-CM5A-LR|MIROC5|NorESM1-M|CCAM-r3355-GFDL-ESM2M|CCAM-r3355-MIROC5)
   echo GCM $gcm
   icalendar=365_day;;
-CMCC-CESM|CNRM-CM5|ACCESS1-0)
+CMCC-CESM|CNRM-CM5|ACCESS1-0|CCAM-r3355-CNRM-CM5|CCAM-r3355-ACCESS1-0)
   echo GCM $gcm
   icalendar=standard;;
 HadGEM2-ES)
@@ -108,7 +108,7 @@ timeframe=${ysp}0101-${yep}1231
 # set input directory and file name
 # (customize to your raw climate model output data directory and file name structures)
 #CHANGED WKS
-idir=$idirGCMsource/$gcm  
+idir=$idirGCMsource/$gcm
 ifile=${ivar}_${frequency}_${gcm}_${exp}_${realization}_$timeframe.nc
 
 # set output directory and file name
@@ -126,7 +126,7 @@ remapweightsfile=$remapweightsdir/$gcm.remap$remapmethod.$obsdataset$remapweight
 
 # generate remap weights
 if [ $remapgriddesfile -nt $remapweightsfile.$ncs ]
-then 
+then
   echo generating remap weights ...
   $cdo gen$remapmethod,$remapgriddesfile $idir/$ifile $remapweightsfile.$ncs
   wait

@@ -1,5 +1,5 @@
 #!/bin/bash
-   
+
 #PBS -q express
 #PBS -P er4
 #PBS -N job_getcoeff_1_a_3
@@ -16,19 +16,20 @@ module load pbs
 source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
 module load cdo
 module load gdl
-module load idl
+# module load idl
+module load idl/8.4
 
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
-export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
 variable=rsds
-refperiod=1990-2017
+refperiod=1976-2005
 bcmeth=rsds
-gcm=CNRM-CM5
+gcm=CCAM-r3355-MIROC5
 yst=$(cut -d '-' -f 1 <<< ${refperiod})
 yen=$(cut -d '-' -f 2 <<< ${refperiod})
 
@@ -38,7 +39,4 @@ cp $tdir/$gcm/$obsdata/idat/${variable}*_${yst}0101-${yen}1231.nc4 $tdir/$gcm/$o
 wait
 
 # MEANT to be get_coeff_00.sh do not change!
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_00.sh $obsdata $refperiod $variable $bcmeth $gcm
-
-
-
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_00.sh $obsdata $refperiod $variable $bcmeth $gcm

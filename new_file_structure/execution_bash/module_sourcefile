@@ -1,0 +1,10 @@
+module purge
+module load netcdf
+module load cdo
+module load nco
+module load gdl
+module load idl
+module load pbs
+
+export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro

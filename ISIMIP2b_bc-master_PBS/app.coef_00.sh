@@ -16,7 +16,7 @@ module purge
 module load cdo
 module load nco
 module load gdl
-module load idl
+module load idl/8.4
 module load python/2.7.11
 module load pbs
 
@@ -158,7 +158,7 @@ fi
 
 export gcm=$5
 case $gcm in
-GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
+GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0|)
   echo GCM $gcm;;
 *)
   echo GCM $gcm not supported !!! exiting ... $(date)

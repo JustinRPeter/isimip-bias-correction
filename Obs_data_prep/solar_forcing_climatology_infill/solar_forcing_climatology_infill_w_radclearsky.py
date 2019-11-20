@@ -30,7 +30,7 @@ from os import getcwd
 from awrams.utils.awrams_log import get_module_logger
 
 #Author: Wendy Sharples
-#Date: 28.03.2018 
+#Date: 28.03.2018
 #WRM
 #Bureau of Meteorology
 #Collins St Melbourne, VIC 3001
@@ -42,7 +42,7 @@ from awrams.utils.awrams_log import get_module_logger
 #if < 1990
 #forcing_array = climatology array
 #else:
-#Get the forcing array  
+#Get the forcing array
 #Find the gaps
 #Fill the gaps
 #write out to file
@@ -57,7 +57,7 @@ from awrams.utils.awrams_log import get_module_logger
 #------------------------------------------------------------
 
 def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,long_name,units,dataarray,chunk_time,chunk_lat,chunk_lon,sig_dig,fill_value,logger):
-    
+
     nco = netCDF4.Dataset(nc_filename,'w',format='NETCDF4',clobber=True)
     dims = np.shape(dataarray)
     numtime = dims[0]
@@ -71,7 +71,7 @@ def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,l
         nlat = dims[1]
         nlon = dims[2]
         initialtime = (basedate-epochdate).total_seconds()/86400.
- 
+
     timearray = np.zeros(numtime)
     for i in range(numtime):
         timearray[i] = initialtime + i
@@ -83,7 +83,7 @@ def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,l
     nco.createDimension('time',None)
     nco.createDimension('latitude',nlat)
     nco.createDimension('longitude',nlon)
-    
+
     if (np.size(dims) == 3):
         timeo = nco.createVariable('time','i4',('time'),zlib=True)
         timeo.units = 'days since ' + str(epochdate.year) +  '-' + str(epochdate.month).zfill(2) + '-' + str(epochdate.day).zfill(2)
@@ -98,7 +98,7 @@ def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,l
     lato.units = 'degrees_north'
     lato.standard_name = 'latitude'
     lato.long_name = 'latitude'
-    
+
     lono = nco.createVariable('longitude','f4',('longitude'),zlib=True)
     lono.units = 'degrees_east'
     lono.standard_name = 'longitude'
@@ -137,7 +137,7 @@ def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,l
         var0o[:,:,:,:] = dataarray
     else:
         var0o[:,:,:] = dataarray
-    
+
     nco.close()
     dataarray = None
 
@@ -147,7 +147,7 @@ def write_new_ncfile(nc_filename,basedate,epochdate,lat,lon,name,standard_name,l
 #-----------------------------------------------------
 
 def infill_with_climatology(nparray_forcing,clima_array,image,fill_value,num_days,logger):
-    
+
     lm_3d = np.repeat(image[np.newaxis,:,:],num_days,axis=0)
     gap_list_t,gap_list_lat,gap_list_lon = np.where(np.logical_and(np.logical_or(nparray_forcing==fill_value,np.isnan(nparray_forcing)),lm_3d>=1.0))
     logger.info("Gap list is this long: %d and first gap is " % len(gap_list_t))
@@ -166,7 +166,7 @@ def infill_with_climatology(nparray_forcing,clima_array,image,fill_value,num_day
 #-----------------------------------------------------
 
 def get_climatology_array_montly(nparray_clima, num_days, year, numlat, numlon, fill_value,logger):
-    
+
     temp_sf = np.zeros((num_days,numlat,numlon))
     temp_sf.fill(fill_value)
     days = []
@@ -174,7 +174,7 @@ def get_climatology_array_montly(nparray_clima, num_days, year, numlat, numlon, 
     for i in range(12):
         mon = i + 1
         days.append(calendar.monthrange(year, mon)[1])
-    
+
     eidx = 0
     sidx = 0
     for i in range(12):
@@ -210,14 +210,14 @@ def get_rad_clear_sky_year(self, num_days, year, lat_array, numlat, numlon, fill
 #-----------------------------------------------------
 
 def solar_variables(self, lat, delta, logger):
-    
+
     phi = lat * math.pi / 1.8e2
     self.solar_vars[lat] = (phi, np.arccos(-np.tan(phi)*np.tan(delta)))
     return self.solar_vars[lat]
 
 
 def rad_clear_sky(self, lat, num_days, logger):
-    
+
     q0 = 2 * math.pi * np.arange(num_days) / 365.
     delta = 0.006918 - 0.399912 * np.cos(q0) + 0.070257 * np.sin(q0) -0.006758 * np.cos(2 * q0) + 0.000907 * np.sin(2 * q0) -0.002697 * np.cos(3 * q0) + 0.00148 * np.sin(3 * q0)
     sin_delta = np.sin(delta)
@@ -228,12 +228,12 @@ def rad_clear_sky(self, lat, num_days, logger):
     return whole_year
 
 #-----------------------------------------------------
-# Infills solar forcing or replaces solar forcing 
+# Infills solar forcing or replaces solar forcing
 # by climatology depending on whether pre or post
 # 1990 and writes to file
 #-----------------------------------------------------
 
-def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_filename, frequency, year, extent, in_dir, out_dir, climatology_dir, states_dir, forcing_var_name, climatology_var_name, overwrite, basedate, epochdate, chunk_time, chunk_lat, chunk_lon, sig_dig, fill_value, image, logger):    
+def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_filename, frequency, year, extent, in_dir, out_dir, climatology_dir, states_dir, forcing_var_name, climatology_var_name, overwrite, basedate, epochdate, chunk_time, chunk_lat, chunk_lon, sig_dig, fill_value, image, logger):
 
     bbox = extents.get_default_extent()
     numlat = bbox.shape[0]
@@ -241,9 +241,9 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
     num_days = 365
     if (calendar.isleap(year)):
         num_days = 366
-    
+
     new_forcing_file = out_dir + '/' + forcing_filename + '/' + forcing_filename + '_' + str(year) + '.nc'
-    
+
     #Check for pre-existing data
     if (os.path.exists(new_forcing_file)):
         if(overwrite == True):
@@ -258,7 +258,7 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
     else:
         if not (os.path.exists(out_dir)):
             os.mkdir(out_dir)
-        if not (os.path.exists(out_dir + '/' + forcing_var_name)): 
+        if not (os.path.exists(out_dir + '/' + forcing_var_name)):
             os.mkdir(out_dir + '/' + forcing_var_name)
 
     climatology_file = str(climatology_dir) + '/' + climatology_filename + '.nc'
@@ -269,16 +269,16 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
         logger.info("climatology file:%s not found or something is wrong with it. Please check." % climatology_file)
         sys.exit()
     #logger.info(forcingdata.keys())
-    #The easiest way to convert an xarray data structure from lazy dask arrays into eager, 
+    #The easiest way to convert an xarray data structure from lazy dask arrays into eager,
     #in-memory numpy arrays is to use the load() method:
-    climatologydata.load()    
+    climatologydata.load()
 
     #get climatology array:
     nparray_clima = np.asarray(climatologydata.__getitem__(climatology_var_name))
     self.lats = np.asarray(climatologydata.__getitem__('latitude'))
     self.lons = np.asarray(climatologydata.__getitem__('longitude'))
 
-    if (frequency == 'M'):    
+    if (frequency == 'M'):
         #convert monthly climatology array into a daily array:
         #insert extra day for leap year
         nparray_clima = np.reshape(nparray_clima,(12,numlat,numlon))
@@ -297,7 +297,7 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
         standard_name = "integral_of_surface_downwelling_shortwave_flux_in_air_wrt_time"
         long_name = "Daily global solar radiation exposure"
         units = "MJ m^-2"
-    else: 
+    else:
         #load up forcing
         forcing_file = str(in_dir) + '/' + forcing_filename + '/' + forcing_filename + '_' + str(year) + '.nc'
         try:
@@ -306,13 +306,13 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
             logger.info("forcing file:%s not found" % forcing_file)
             sys.exit()
         #logger.info(forcingdata.keys())
-        #The easiest way to convert an xarray data structure from lazy dask arrays into eager, 
+        #The easiest way to convert an xarray data structure from lazy dask arrays into eager,
         #in-memory numpy arrays is to use the load() method:
         forcingdata.load()
         name = forcingdata[forcing_var_name].attrs['name']
         standard_name = forcingdata[forcing_var_name].attrs['standard_name']
         long_name = forcingdata[forcing_var_name].attrs['long_name']
-        units = forcingdata[forcing_var_name].attrs['units']    
+        units = forcingdata[forcing_var_name].attrs['units']
         #get climatology array:
         nparray_forcing = np.asarray(forcingdata.__getitem__(forcing_var_name))
         resulting_array = infill_with_climatology(nparray_forcing,clima_array,image,fill_value,num_days,logger)
@@ -321,8 +321,8 @@ def infill_solar_forcing_and_write_to_file(self, forcing_filename, climatology_f
     clima_array = None
     #logger.info(resulting_array)
     #write to file:
-    
-    write_new_ncfile(new_forcing_file,basedate,epochdate,self.lats,self.lons,name,standard_name,long_name,units,resulting_array,chunk_time,chunk_lat,chunk_lon,sig_dig,fill_value,logger)        
+
+    write_new_ncfile(new_forcing_file,basedate,epochdate,self.lats,self.lons,name,standard_name,long_name,units,resulting_array,chunk_time,chunk_lat,chunk_lon,sig_dig,fill_value,logger)
     resulting_array = None
 
 #-----------------------------------------------------
@@ -360,7 +360,7 @@ def create_rad_clear_sky_and_write_to_file(self, year, extent, out_dir, overwrit
         if not (os.path.exists(out_dir + '/' + forcing_filename)):
             os.mkdir(out_dir + '/' + forcing_filename)
 
-    resulting_array = get_rad_clear_sky_year(self, num_days, year, self.lats, numlat, numlon, fill_value, logger) 
+    resulting_array = get_rad_clear_sky_year(self, num_days, year, self.lats, numlat, numlon, fill_value, logger)
     name = forcing_var_name
     standard_name = "downward_shortwave_clear_sky_radiation"
     long_name = "Daily downward short wave radiation for a clear sky"
@@ -424,11 +424,11 @@ class solar_infill:
         Generates solar forcing infilled with solar climatology.
         Everything prior to 1990 is just climatology (constant over the year)
         """
-        
+
         full_extent = extents.get_default_extent()
         numlat = full_extent.shape[0]
         numlon = full_extent.shape[1]
-        
+
         nlogger = logging.getLogger('NULL')
         nlogger.parent.handlers
 
@@ -441,7 +441,7 @@ class solar_infill:
         except:
             logger.info("landmask file:%s not found" % lm_file)
             sys.exit()
-        #The easiest way to convert an xarray data structure from lazy dask arrays into eager, 
+        #The easiest way to convert an xarray data structure from lazy dask arrays into eager,
         #in-memory numpy arrays is to use the load() method:
         lmdata.load()
         #get landmask array:
@@ -453,13 +453,13 @@ class solar_infill:
             #scale forcing and write to netcdf
             basedate = dt.datetime(year,1,1,0,0,0)
             logger.info("Starting to infill solar forcing and writing this out to file for year %d" % year)
-            #commented out for debugging purposes- want to use old forcing 
+            #commented out for debugging purposes- want to use old forcing
             infill_solar_forcing_and_write_to_file(self, self.forcing_file, self.climatology_file, self.frequency, year, full_extent, self.forcing_dir, self.output_dir, self.climatology_dir, self.states_dir, self.forcing_var, self.climatology_var, self.overwrite, basedate, self.epochdate, self.chunk_time, self.chunk_lat, self.chunk_lon, self.sig_dig, self.fill_value, image, logger)
             if(self.rad_clear_sky == True):
                 logger.info("Starting to write out clear sky downward radiation for year %d" % year)
                 create_rad_clear_sky_and_write_to_file(self, year, full_extent, self.output_dir, self.overwrite, basedate, self.epochdate, self.chunk_time, self.chunk_lat, self.chunk_lon, self.sig_dig, self.fill_value, logger)
-            logger.info("Finshed writing forcing")                    
-               
+            logger.info("Finshed writing forcing")
+
 if __name__ == '__main__':
 
     runner = solar_infill(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7], sys.argv[8], sys.argv[9], sys.argv[10], sys.argv[11], sys.argv[12], sys.argv[13])

@@ -16,7 +16,7 @@ module purge
 module load cdo
 module load nco
 module load gdl
-module load idl
+module load idl/8.4
 module load python/2.7.11
 module load pbs
 

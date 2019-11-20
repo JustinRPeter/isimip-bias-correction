@@ -9,16 +9,16 @@ pro app_coef_rlds_sfcWind,ipathdata_prevmonth,ipathdata_thismonth,ipathdata_next
 
 
 ; restore transfer function coefficients
-cmrestore,ipathcoef
+RESTORE,ipathcoef
 
 print,ipathdata_prevmonth,ipathdata_thismonth,ipathdata_nextmonth,ipathcoef,opath
 
 ; restore GCM data to be corrected
-cmrestore,ipathdata_prevmonth
+RESTORE,ipathdata_prevmonth
 fullmean_gcm_prevmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathdata_nextmonth
+RESTORE,ipathdata_nextmonth
 fullmean_gcm_nextmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathdata_thismonth
+RESTORE,ipathdata_thismonth
 fullmean_gcm_thismonth = mean(idldata,DIMENSION=2)
 idata = idldata
 idldata = 0
@@ -135,5 +135,5 @@ overthresh = 0
 
 idldata = odata
 odata = 0
-cmsave,filename=opath,idldata
+SAVE,filename=opath,idldata
 end

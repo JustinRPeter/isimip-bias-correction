@@ -7,22 +7,22 @@ pro app_coef_tasmax_tasmin,ipathtasminmax_uncorrected,ipathtas_uncorrected,ipath
 
 
 ; restore and limit three months of transfer function coefficients
-cmrestore,ipathcoef_prevmonth
+RESTORE,ipathcoef_prevmonth
 overthresh=where(a_td gt correctionfactormax)
 if (overthresh(0) ne -1) then a_td[overthresh] = correctionfactormax
 adm1=a_td
-cmrestore,ipathcoef_thismonth
+RESTORE,ipathcoef_thismonth
 overthresh=where(a_td gt correctionfactormax)
 if (overthresh(0) ne -1) then a_td[overthresh] = correctionfactormax
 ad=a_td
-cmrestore,ipathcoef_nextmonth
+RESTORE,ipathcoef_nextmonth
 overthresh=where(a_td gt correctionfactormax)
 if (overthresh(0) ne -1) then a_td[overthresh] = correctionfactormax
 adp1=a_td
 
 
 ; restore corrected GCM tas data
-cmrestore,ipathtas_corrected
+RESTORE,ipathtas_corrected
 print,'checking for negative values in input data ...'
 IF (min(idldata) LT 0.0) THEN BEGIN
    print,'negative values in corrected GCM tas data !!! exiting ...'
@@ -32,7 +32,7 @@ tas_c=idldata
 
 
 ; restore uncorrected GCM tas data
-cmrestore,ipathtas_uncorrected
+RESTORE,ipathtas_uncorrected
 IF (min(idldata) LT 0.0) THEN BEGIN
    print,'negative values in uncorrected GCM tas data !!! exiting ...'
    STOP
@@ -41,7 +41,7 @@ tas_e=idldata
 
 
 ; restore uncorrected GCM tasmax/tasmin data
-cmrestore,ipathtasminmax_uncorrected
+RESTORE,ipathtasminmax_uncorrected
 IF (min(idldata) LT 0.0) THEN BEGIN
    print,'negative values in uncorrected GCM tasmax/tasmin data !!! exiting ...'
    STOP
@@ -95,5 +95,5 @@ FOR y=0,nyear-1 DO BEGIN
 endfor
 
 
-cmsave,idldata,filename=opath
+SAVE,idldata,filename=opath
 end

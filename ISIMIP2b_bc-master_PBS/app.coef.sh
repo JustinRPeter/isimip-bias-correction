@@ -18,7 +18,7 @@ module load cdo
 module load nco
 module load gdl
 # module load idl
-module load idl/8.6
+module load idl/8.4
 module load pbs
 
 export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
@@ -160,7 +160,7 @@ fi
 
 export gcm=$5
 case $gcm in
-GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
+GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0|CCAM-r3355-CNRM-CM5|CCAM-r3355-ACCESS1-0|CCAM-r3355-GFDL-ESM2M|CCAM-r3355-MIROC5)
   echo GCM $gcm;;
 *)
   echo GCM $gcm not supported !!! exiting ... $(date)
@@ -363,7 +363,7 @@ hurs|rsds)
   esac  # bcmethod
   for stat in meanrel var1rel
   do
-     # need to put -L to avoid seg faults- JUST FOUND THIS OUT THANKS NCI 
+     # need to put -L to avoid seg faults- JUST FOUND THIS OUT THANKS NCI
      $cdo -L -ifthenelse -eq -selname,$stat $ipathcoefgcmper.$ncs -selname,$stat $ipathcoefgcmref.$ncs \
         -selname,$stat $ipathcoefobsref.$ncs \
         -ifthenelse -lt -selname,$stat $ipathcoefgcmper.$ncs -selname,$stat $ipathcoefgcmref.$ncs \

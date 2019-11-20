@@ -75,7 +75,7 @@ cat > $spath << EOF
 #PBS -l walltime=8:00:00
 #PBS -l ncpus=16
 #PBS -l mem=64gb
-#PBS -lsoftware=idl
+#PBS -l software=idl
 #PBS -N bc1p5n$month
 #PBS -P er4
 ##PBS -M wendy.sharples@bom.gov.au
@@ -87,7 +87,7 @@ module load cdo
 module load nco
 module load gdl
 # module load idl
-module load idl/8.6
+module load idl/8.4
 
 export IDL_STARTUP=/g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 

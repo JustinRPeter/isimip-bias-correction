@@ -10,5 +10,5 @@
 
 source /g/data/er4/AWRACMS/raijin_activate_v6.1_anu
 
-python /g/data/er4/LIS/test_data/solar_forcing_climatology_infill_w_radclearsky.py 1970 2017 '/g/data/er4/data/CLIMATE' '/g/data/er4/data/CLIMATOLOGY' '/g/data/er4/ws1620/hydro_proj_ens_runs/initial_states_plus_climatology' '/g/data/er4/ISIMIP/AWAP/solar_forcing_climatology_infill' 'solar_exposure_day' 'climatology_daily_solar_exposure_day' 'solar_exposure_day' 'solar_exposure_day' 'D' True True
+python /g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/solar_forcing_climatology_infill/solar_forcing_climatology_infill_w_radclearsky.py 1960 2018 '/g/data/er4/data/CLIMATE' '/g/data/er4/data/CLIMATOLOGY' '/g/data/er4/ws1620/hydro_proj_ens_runs/initial_states_plus_climatology' '/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/solar_forcing_climatology_infill' 'solar_exposure_day' 'climatology_daily_solar_exposure_day' 'solar_exposure_day' 'solar_exposure_day' 'D' True True
 
