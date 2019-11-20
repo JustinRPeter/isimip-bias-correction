@@ -3,7 +3,7 @@
 #PBS -q express
 #PBS -P er4
 #PBS -N job_prepare_1
-#PBS -l walltime=10:00:00
+#PBS -l walltime=2:00:00
 ##PBS -l nodes=1
 #PBS -l ncpus=16
 #PBS -l mem=32gb
@@ -14,7 +14,7 @@ module load cdo
 
 #Read directory & file
 obs_dir=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep
-obs_files=( 'tasmax_day_AWAP_19760101-20051231.nc4' 'tasmin_day_AWAP_19760101-20051231.nc4' )
+obs_files=( 'tasmax_day_AWAP_19760101-20051231.nc4_tmp' 'tasmin_day_AWAP_19760101-20051231.nc4_tmp' )
 
 #Time period
 year_start=1976
@@ -34,20 +34,20 @@ chtime=12
 #nodes.mix('tmin','tmax',0.75): lhs=tmin, rhs=tmax, ratio=0.75
 #(1.0-0.75)*tmin + 0.75*tmax = 0.25*tmin + 0.75*tmax
 #change the max and min according to the actual max or min:
-exp1="-expr,'tasmax=(tasmin>tasmax)?tasmin:tasmax'"
-exp2="-expr,'tasmin=(tasmax<tasmin)?tasmax:tasmin'"
-exp3="-expr,'tas=0.75*tasmax+0.25*tasmin'"
+exp1=-expr,'tasmax=(tasmin>tasmax)?tasmin:tasmax'
+exp2=-expr,'tasmin=(tasmax<tasmin)?tasmax:tasmin'
+exp3=-expr,'tas=0.75*tasmax+0.25*tasmin'
 
-cdo -f nc4c -z zip_9 -merge $obs_dir/${obs_files[0]} $obs_dir/${obs_files[1]} ${output_file}.nc4
+cdo -f nc4c -z zip_9 -L -merge $obs_dir/${obs_files[0]} $obs_dir/${obs_files[1]} ${output_file}.nc4
 wait
 
 mv ${output_file}.nc4 ${output_file}.nc4_tmp
 wait
 
-cdo -f nc4c -z zip_9 ${exp1} ${output_file}.nc4_tmp ${obs_files[0]}
+cdo -f nc4c -z zip_9 -L ${exp1} ${output_file}.nc4_tmp ${obs_files[0]}
 wait
 
-cdo -f nc4c -z zip_9 ${exp2} ${output_file}.nc4_tmp ${obs_files[1]}
+cdo -f nc4c -z zip_9 -L ${exp2} ${output_file}.nc4_tmp ${obs_files[1]}
 wait
 
 cdo -f nc4c -z zip_9 -merge $obs_dir/${obs_files[0]} $obs_dir/${obs_files[1]} ${output_file}.nc4
