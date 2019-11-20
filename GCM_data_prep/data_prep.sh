@@ -27,15 +27,20 @@ ver=$7
 #merge
 merge=$8
 
+ccam_gcm=$9
+
 pwd=$PWD
 dateys=$(date -d $ys +"%Y%m%d")
 dateye=$(date -d $ye +"%Y%m%d")
-echo $dateys $dateye 
+echo $dateys $dateye
 
-#assuming r1i1p1 but could put this in as another variable
-data_path=${ipath}/${rcp}/day/atmos/day/r1i1p1/${ver}/${var}
-filename=${var}_day_${gcm}_${rcp}_r1i1p1_
-output_path=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/${gcm}
+data_path=${ipath}/${rcp}/r1i1p1/CSIRO-CCAM-r3355/${ver}/day/${var} # Use this for CCAM data
+filename=${var}_AUS-50_${gcm}_${rcp}_r1i1p1_CSIRO-CCAM-r3355_v1_day_ # Use this for CCAM data
+newfilename=${var}_day_${ccam_gcm}_${rcp}_r1i1p1_
+# data_path=${ipath}/${rcp}/day/atmos/day/r1i1p1/${ver}/${var}
+# filename=${var}_day_${gcm}_${rcp}_r1i1p1_
+
+output_path=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/${ccam_gcm}
 echo data path is $data_path
 
 #get all files pertaining to the start and end year
@@ -102,8 +107,9 @@ echo we are merging files and then selecting the date range from $ys to $ye
         cdo -f nc4c -z zip_9 -mergetime $filelist $pwd/tmp_${filename}merged.nc
 wait
 
-# Merge files and output to "GCM" folder 
-cdo -f nc4c -z zip_9 -seldate,$ys,$ye $pwd/tmp_${filename}merged.nc $output_path/${filename}${ys}-${ye}.nc
+# Merge files and output to "GCM" folder
+# cdo -f nc4c -z zip_9 -seldate,$ys,$ye $pwd/tmp_${filename}merged.nc $output_path/${filename}${ys}-${ye}.nc
+cdo -f nc4c -z zip_9 -seldate,$ys,$ye $pwd/tmp_${filename}merged.nc $output_path/${newfilename}${ys}-${ye}.nc #USE THIS FOR CCAM DATA
 wait
 
 # Clean up files

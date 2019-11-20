@@ -15,7 +15,7 @@ print,'using '+ipathgcm+' and '+ipathobs+' to get transfer function coefficients
 
 
 ; read OBS data
-cmrestore,ipathobs
+RESTORE,ipathobs
 pr_o = idldata*idlfactor
 
 
@@ -31,7 +31,7 @@ extremes = fltarr(NUMLANDPOINTS,2)
 
 
 ; read GCM data
-cmrestore,ipathgcm
+RESTORE,ipathgcm
 pr_e = idldata*idlfactor
 idldata=0
 
@@ -39,12 +39,24 @@ idldata=0
 ; check for negative values in input data
 print,'checking for negative values in input data ...'
 IF (min(pr_e) LT -1e-6) THEN BEGIN
-   print,'negative values in GCM data !!! exiting ...'
-   STOP
+   IF(min(pr_e) LT -1e-4) THEN BEGIN
+      print,'negative values in GCM data !!! exiting ...'
+      STOP
+   ENDIF
+   IF(min(pr_e) LT -1e-5) THEN BEGIN
+      print, 'within tolerance. Setting to 0 val ...'
+      pr_e = 0
+   ENDIF
 ENDIF
-IF (min(pr_o) LT -1e-6) THEN BEGIN
-   print,'negative values in OBS data !!! exiting ...'
-   STOP
+IF (min(pr_e) LT -1e-6) THEN BEGIN
+   IF(min(pr_e) LT -1e-4) THEN BEGIN
+      print,'negative values in OBS data !!! exiting ...'
+      STOP
+   ENDIF
+   IF(min(pr_e) LT -1e-5) THEN BEGIN
+      print, 'within tolerance. Setting to 0 val ...'
+      pr_e = 0
+   ENDIF
 ENDIF
 print,'... check passed'
 
@@ -573,6 +585,6 @@ for i = 0L,(NUMLANDPOINTS-1) do begin
 endfor
 
 
-cmsave,filename=opath,$
+SAVE,filename=opath,$
        a_pr,b_pr,error_pr,tau_pr,x0_pr,meanratio,s_e,s_m,extremes
 end

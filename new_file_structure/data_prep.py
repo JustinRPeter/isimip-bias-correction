@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+from multiprocessing import Pool
 from collections import namedtuple
 import glob
 import math
 import os
+import tempfile
+import shutil
 import subprocess
 import sys
 
@@ -49,47 +52,52 @@ def get_files(finfo, dinfo, vinfo):
     # Copy file to working directory
     for x in filteredfiles:
         print(f"Copying file: {x}")
-        exec_cmd(f"cp {x} {os.getcwd()}")
+        exec_cmd(f"cp {x} {finfo.temp_dir}")
 
     return filteredfiles
 
-# Get file output - execute muliple CDO commands
 def process_files(filteredfiles, finfo, dinfo):
-    # Generate the output folder if it doesn't exist, then merge relevant files into a single output
     exec_cmd(f"mkdir -p {finfo.gcm_output_path}")
     print(f"Merging files then selecting date range from {dinfo.year_start} to {dinfo.year_end}")
-    exec_cmd(f"cdo -f nc4c -z zip_9 -mergetime {' '.join(filteredfiles)} {os.getcwd()}/tmp_{file_info.file_name}merged.nc")
-    exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{dinfo.year_start_app},{dinfo.year_end_app} {os.getcwd()}/tmp_{finfo.file_name}merged.nc {finfo.gcm_output_path}/{finfo.file_name}{dinfo.year_start_app}-{dinfo.year_end_app}.nc")
+    exec_cmd(f"cdo -f nc4c -z zip_9 -mergetime {' '.join(filteredfiles)} {finfo.temp_dir}/{file_info.file_name}merged.nc")
+    exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{dinfo.year_start_app},{dinfo.year_end_app} {finfo.temp_dir}/{finfo.file_name}merged.nc {finfo.gcm_output_path}/{finfo.file_name}{dinfo.year_start_app}-{dinfo.year_end_app}.nc")
 
     # Clean-up tmp files
-    for x in filteredfiles:
-        if(os.path.basename(x) in " ".join(glob.glob(f"{os.getcwd()}/*"))):
-            exec_cmd(f"rm {os.getcwd()}/{os.path.basename(x)}")
-    exec_cmd(f"rm {os.getcwd()}/tmp_{finfo.file_name}merged.nc")
+    # for x in filteredfiles:
+    #     if(os.path.basename(x) in " ".join(glob.glob(f"{os.getcwd()}/*"))):
+    #         os.remove(f"rm {finfo.temp_dir}/{os.path.basename(x)}")
+    # os.remove(f"{finfo.temp_dir}/{finfo.file_name}merged.nc")
+    shutil.rmtree(finfo.temp_dir)
+
+def fn(foo_item):
+    i, j = foo_item
+    exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{i}0101,{j}1231 {output_path}/{var}_day_{gcm}_historical_r1i1p1_{years['start_year']}0101-{years['end_year']}1231.nc {output_path}/{var}_day_{gcm}_historical_r1i1p1_{i}0101-{j}1231.nc")
 
 # Split files if rcp is historical to prepare for isimip interp
-def split_files(gcm, var):
-    start_years, end_years = year_split_decade(years['start_year'], years['end_year'])
-    for i, j in zip(start_years, end_years):
-            exec_cmd(f"cdo -f nc4c -z zip_9 -seldate,{i},{j} ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_19710101-20051231.nc ../{gcm}/{var}_day_{gcm}_historical_r1i1p1_{i}-{j}.nc")
+def split_files(gcm, var, output_path):
+    start_years, end_years = cfg.year_split_decade(years['start_year'], years['end_year'])
+    foo = list(zip(start_years, end_years))
 
+    with Pool() as p:
+        p.map(fn, foo)
 
 def define_variables(v, reference_period):
-    FileInfo = namedtuple('FileInfo', ['data_path', 'file_name', 'gcm_output_path'])
+    """Create named tuples to store categories of information that are passed around and updated"""
+    FileInfo = namedtuple('FileInfo', ['data_path', 'file_name', 'gcm_output_path', 'temp_dir'])
     DateInfo = namedtuple('DateInfo', ['year_start', 'year_end', 'decade', 'year_start_app', 'year_end_app'])
     VersionInfo = namedtuple('VersionInfo', ['rcp', 'ver'])
 
-    gcm_output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/{gcm}"
+    gcm_output_path = f"/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/new_file_structure/ProjectFiles/source_{gcm}"
 
     #Check if data is for reference period (True/False - Flag)
     if reference_period:
         decade = str(math.floor(years['start_year']/10)*10)
-        file_info = FileInfo(f"{v.gcm_dir}/{v.rcp}/day/atmos/day/r1i1p1/{v.version}/{v.name}", f"{v.name}_day_{gcm}_{v.rcp}_r1i1p1_", gcm_output_path)
+        file_info = FileInfo(f"{v.gcm_dir}/{v.rcp}/day/atmos/day/r1i1p1/{v.version}/{v.name}", f"{v.name}_day_{gcm}_{v.rcp}_r1i1p1_", gcm_output_path, tempfile.mkdtemp())
         date_info = DateInfo(years['start_year'],  years['end_year'], decade, f"{years['start_year']}0101", f"{years['end_year']}1231")
         version_info = VersionInfo(v.rcp, v.version)
     else:
         decade = str(math.floor(years['projection_start']/10)*10)
-        file_info = FileInfo(f"{v.gcm_dir}/{v.projection_rcp}/day/atmos/day/r1i1p1/{v.projection_version}/{v.name}", f"{v.name}_day_{gcm}_{v.projection_rcp}_r1i1p1_", gcm_output_path)
+        file_info = FileInfo(f"{v.gcm_dir}/{v.projection_rcp}/day/atmos/day/r1i1p1/{v.projection_version}/{v.name}", f"{v.name}_day_{gcm}_{v.projection_rcp}_r1i1p1_", gcm_output_path, tempfile.mkdtemp())
         date_info = DateInfo(years['projection_start'],  years['projection_end'], decade, f"{years['projection_start']}0101", f"{years['projection_end']}1231")
         version_info = VersionInfo(v.projection_rcp, v.projection_version)
 
@@ -100,11 +108,11 @@ if __name__ == '__main__':
     for v in cfg.active_vars:
         # Prepare GCM data for reference period
         file_info, date_info, version_info = define_variables(v, True)
-        files = get_files(file_info, date_info, version_info)
-        process_files(files, file_info, date_info)
-        split_files(gcm, v.name)
+        # files = get_files(file_info, date_info, version_info)
+        # process_files(files, file_info, date_info)
+        split_files(gcm, v.name, file_info.gcm_output_path)
 
-        # Prepare GCM data for projection period
-        file_info, date_info, version_info = define_variables(v, False)
-        files = get_files(file_info, date_info, version_info)
-        process_files(files, file_info, date_info)
+        # # Prepare GCM data for projection period
+        # file_info, date_info, version_info = define_variables(v, False)
+        # files = get_files(file_info, date_info, version_info)
+        # process_files(files, file_info, date_info)

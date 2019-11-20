@@ -13,21 +13,21 @@ print,'using '+ipathgcm_thismonth+' and '+ipathobs_thismonth+' and similar files
 
 
 ; read OBS data
-cmrestore,ipathobs_prevmonth
+RESTORE,ipathobs_prevmonth
 fullmean_obs_prevmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathobs_nextmonth
+RESTORE,ipathobs_nextmonth
 fullmean_obs_nextmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathobs_thismonth
+RESTORE,ipathobs_thismonth
 fullmean_obs_thismonth = mean(idldata,DIMENSION=2)
 pr_o = idldata
 
 
 ; read GCM data
-cmrestore,ipathgcm_prevmonth
+RESTORE,ipathgcm_prevmonth
 fullmean_gcm_prevmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathgcm_nextmonth
+RESTORE,ipathgcm_nextmonth
 fullmean_gcm_nextmonth = mean(idldata,DIMENSION=2)
-cmrestore,ipathgcm_thismonth
+RESTORE,ipathgcm_thismonth
 fullmean_gcm_thismonth = mean(idldata,DIMENSION=2)
 pr_e = idldata
 idldata = 0
@@ -250,5 +250,5 @@ for n=0L,(NUMLANDPOINTS-1) do begin
 endfor
 
 
-cmsave,filename=opath,climatology_obs_over_gcm,a_pr,b_pr,tau_pr,error_pr,extremes
+SAVE,filename=opath,climatology_obs_over_gcm,a_pr,b_pr,tau_pr,error_pr,extremes
 end

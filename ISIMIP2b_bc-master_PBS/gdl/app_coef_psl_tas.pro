@@ -7,16 +7,16 @@ pro app_coef_psl_tas,ipathdata,ipathcoef_prevmonth,ipathcoef_thismonth,ipathcoef
 
 
 ; restore three months of transfer function coefficients
-cmrestore,ipathcoef_prevmonth
+RESTORE,ipathcoef_prevmonth
 Am1=a_tas
-cmrestore,ipathcoef_thismonth
+RESTORE,ipathcoef_thismonth
 A=a_tas
-cmrestore,ipathcoef_nextmonth
+RESTORE,ipathcoef_nextmonth
 Ap1=a_tas
 
 
 ; restore GCM data to be corrected
-cmrestore,ipathdata
+RESTORE,ipathdata
 tas_e=idldata
 
 
@@ -70,5 +70,5 @@ FOR y=0,nyear-1 DO BEGIN
 endfor
 
 
-cmsave,idldata,filename=opath
+SAVE,idldata,filename=opath
 end

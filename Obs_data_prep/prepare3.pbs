@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -q express
+#PBS -q expressbw
 #PBS -P er4
 #PBS -N job_prepare3
 #PBS -l walltime=10:00:00

@@ -18,10 +18,10 @@ module load ncl
 source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 masterPath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS
 
-gcm=ACCESS1-0
+gcm=CCAM-r3355-MIROC5
 obsdata=AWAP
 rcp=rcp85
 var=pr
-period=2006-2068
+period=2006-2099
 
 $masterPath/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False

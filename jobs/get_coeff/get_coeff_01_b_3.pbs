@@ -1,5 +1,5 @@
 #!/bin/bash
-   
+
 #PBS -q express
 #PBS -P er4
 #PBS -N job_getcoeff_1_b_3
@@ -11,23 +11,23 @@
 module purge
 module load pbs
 source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+module load nco
 module load cdo
 module load gdl
-module load idl
+# module load idl
+module load ncl
+module load idl/8.4
 
-export GDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
-export IDL_STARTUP=/g/data/er4/ISIMIP/.idl/idl-startup.pro
+export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
+export IDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
-source /g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/exports.settings.functions_WS.sh
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 
 obsdata=AWAP
 variable=rsds
-refperiod=1990-2017
+refperiod=1976-2005
 bcmeth=rsds
-gcm=CNRM-CM5
+gcm=CCAM-r3355-GFDL-ESM2M
 
-/g/data/er4/ISIMIP/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm
-
-
-
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm

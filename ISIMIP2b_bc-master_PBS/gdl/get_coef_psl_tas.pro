@@ -10,12 +10,12 @@ print,'using '+ipathgcm+' and '+ipathobs+' to get transfer function coefficients
 
 
 ; read OBS data
-cmrestore,ipathobs
+RESTORE,ipathobs
 tas_o=idldata
 
 
 ; read GCM data
-cmrestore,ipathgcm
+RESTORE,ipathgcm
 tas_e=idldata
 
 
@@ -90,5 +90,5 @@ for n=0L,(NUMLANDPOINTS-1) do begin
 endfor
 
 
-cmsave,a_tas,filename=opath
+SAVE,a_tas,filename=opath
 end

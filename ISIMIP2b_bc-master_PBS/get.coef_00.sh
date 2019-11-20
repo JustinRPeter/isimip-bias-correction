@@ -88,7 +88,7 @@ if [ $lobs -eq 0 ]
 then
   export gcm=$5
   case $gcm in
-  GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0)
+  GFDL-ESM2M|HadGEM2-ES|IPSL-CM5A-LR|MIROC5|CNRM-CM5|ACCESS1-0|CCAM-r3355-CNRM-CM5|CCAM-r3355-ACCESS1-0|CCAM-r3355-GFDL-ESM2M|CCAM-r3355-MIROC5)
     echo GCM $gcm;;
   *)
     echo GCM $gcm not supported !!! exiting ... $(date)

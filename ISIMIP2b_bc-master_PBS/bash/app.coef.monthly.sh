@@ -91,7 +91,7 @@ module load cdo
 module load nco
 module load gdl
 # module load idl
-module load idl/8.6
+module load idl/8.4
 
 export IDL_STARTUP=/g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 
