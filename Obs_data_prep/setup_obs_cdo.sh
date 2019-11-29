@@ -34,6 +34,7 @@ wait
 #LOCAL:
 ncrename -O -v $oldvar,$newvar ${output_file}.nc4
 wait
+
 #GLOBAL:
 ncatted -O -a var_name,global,m,c,$newvar ${output_file}.nc4
 wait
@@ -58,3 +59,11 @@ if ! [[ $exp == '' ]]; then
     eval "${cmd}"
 rm *_tmp
 fi
+
+# Changes META data for new sfcWind data
+# if [[ $newvar == 'sfcWind' ]]; then
+#     ncatted -a _FillValue,sfcWind,o,f,1.e+20 ${output_file}
+#     wait
+#     ncatted -a missing_value,sfcWind,o,f,1.e+20 ${output_file}
+#     wait
+# fi
