@@ -67,3 +67,10 @@ fi
 #     ncatted -a missing_value,sfcWind,o,f,1.e+20 ${output_file}
 #     wait
 # fi
+
+
+# Changes dimension labels in rsds's .nc file to match other files
+# if [[$newvar == 'rsds']]; then
+#     ncrename -d longitude,lon -d latitude,lat ${output_file}
+#     wait
+# fi
