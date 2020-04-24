@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4+gdata/hh5
 #PBS -P er4
 #PBS -N job_getcoeff_1_a_3
 #PBS -l walltime=1:00:00
@@ -13,11 +14,11 @@ module load pbs
 # TODO: Actually need to source this in get.coeff_00.sh to load the correct python interpreter.
 # At present $PATH will be different in this script compared to get.coef.sh. The version launched
 # in get.coef.sh won't have numpy available and script won't work.
-source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
-module load cdo
+#source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/source_environment
+module load cdo/1.7.2
 module load gdl
-# module load idl
-module load idl/8.4
+module load idl/8.6
 
 export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 export IDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
@@ -29,7 +30,7 @@ obsdata=AWAP
 variable=rsds
 refperiod=1976-2005
 bcmeth=rsds
-gcm=CCAM-r3355-MIROC5
+gcm=GFDL-ESM2M
 yst=$(cut -d '-' -f 1 <<< ${refperiod})
 yen=$(cut -d '-' -f 2 <<< ${refperiod})
 

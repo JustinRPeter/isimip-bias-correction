@@ -49,6 +49,8 @@ ENDIF
 print,'... check passed'
 tminmax_minus_tas_e = idldata - tas_e
 tas_e=0
+print, 'MINIMUM IS...'
+print, min(minormax*tminmax_minus_tas_e)
 print,'checking for tas exceeding tasmax or tasmin exceeding tas ...'
 IF (min(minormax*tminmax_minus_tas_e) LT 0.0) THEN BEGIN
    print,'tasmax/tasmin </> tas in GCM data !!! exiting ...'

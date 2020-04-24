@@ -1,6 +1,7 @@
 #!/bin/bash
    
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -P er4
 #PBS -N job_getcoeff_1_b
 #PBS -l walltime=1:00:00
@@ -12,9 +13,9 @@
 module load pbs
 module load netcdf
 module load nco
-module load cdo
+module load cdo/1.7.2
 module load gdl
-module load idl/8.4
+module load idl/8.6
 module load ncl
 
 export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
@@ -27,7 +28,7 @@ obsdata=AWAP
 variable=tasmax
 refperiod=1976-2005
 bcmeth=tasmax
-gcm=CCAM-r3355-CNRM-CM5
+gcm=ACCESS1-0
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm coeff
 

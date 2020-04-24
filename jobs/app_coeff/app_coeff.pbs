@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -q express
+#PBS -q expressbw
 #PBS -P er4
 #PBS -N job_appcoeff
 #PBS -l walltime=8:00:00
@@ -25,9 +25,9 @@ obsdata=AWAP
 refperiod=1976-2005
 var=tasmax
 bcmeth=tasmax
-GCM=CCAM-r3355-MIROC5
-rcp=rcp85
-appperiod=2006-2099
+GCM=ACCESS1-0
+rcp=historical
+appperiod=1960-2005
 time=midday
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/app.coef.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time

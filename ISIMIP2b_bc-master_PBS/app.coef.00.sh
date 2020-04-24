@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -l ncpus=16
 #PBS -l mem=128gb
@@ -17,10 +18,10 @@
 # Split netCDF file into months then convert monthly nc4s to IDL binaries.
 
 module purge
-module load cdo
+module load cdo/1.7.2
 module load nco
 module load gdl
-module load idl
+module load idl/8.6
 module load pbs
 
 # TODO: Reconfigure for my dir paths on raijin

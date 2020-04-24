@@ -1,6 +1,7 @@
 #!/bin/bash
    
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -P er4
 #PBS -N job_interp
 #PBS -l walltime=1:00:00
@@ -18,10 +19,10 @@ module load ncl
 source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
 masterPath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS
 
-gcm=CCAM-r3355-MIROC5
+gcm=ACCESS1-0
 obsdata=AWAP
-rcp=historical
+rcp=rcp85
 var=tasmax
-period=1960-2005
+period=2006-2099
 
 $masterPath/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False

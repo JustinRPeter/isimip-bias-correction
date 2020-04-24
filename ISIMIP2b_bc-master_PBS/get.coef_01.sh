@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -N bc1p5get
 #PBS -P er4

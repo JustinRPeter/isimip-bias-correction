@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4+gdata/hh5
 #PBS -P er4
 #PBS -N job_getcoeff_1_b_3
 #PBS -l walltime=1:00:00
@@ -10,13 +11,13 @@
 
 module purge
 module load pbs
-source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+#source /g/data/er4/AWRACMS/raijin_activate_v6_gcc
+source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/source_environment
 module load nco
-module load cdo
+module load cdo/1.7.2
 module load gdl
-# module load idl
 module load ncl
-module load idl/8.4
+module load idl/8.6
 
 export GDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 export IDL_STARTUP=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
@@ -28,6 +29,6 @@ obsdata=AWAP
 variable=rsds
 refperiod=1976-2005
 bcmeth=rsds
-gcm=CCAM-r3355-GFDL-ESM2M
+gcm=GFDL-ESM2M
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/get.coef_01.sh $obsdata $refperiod $variable $bcmeth $gcm

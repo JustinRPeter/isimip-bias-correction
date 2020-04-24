@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#PBS -q expressbw
+#PBS -P er4
+#PBS -N job_solarforce
+#PBS -l walltime=1:00:00
+##PBS -l nodes=1
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+source /g/data/er4/AWRACMS/raijin_activate_v6.1_anu
+
+python /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/new_file_structure/prepare.py

@@ -33,5 +33,5 @@ chtime=12
 exp="-expr,'pr = (( pr > -999.0 ))? pr/86400:pr' -chunit,'mm','kg m-2 s-1'"
 
 #Execute scipt and supply variables
-echo ""${exp}""
-#/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"
+#echo ""${exp}""
+/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/setup_obs_cdo.sh $obs_dir $obs_file $output_file $year_start $year_end $oldvar $newvar $chtime "${exp}"

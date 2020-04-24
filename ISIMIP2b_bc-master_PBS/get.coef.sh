@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -N bc1p5get
 #PBS -P er4
@@ -186,7 +187,7 @@ hurs|rsds)
     get_coef_hurs_rsds_special_args="-f $rsdsmaxfitthreshold -t $sdir/python/TOA_daily_mean_insolation_climatology -x $odir/$ifile.ydaymax.$ncs"
     echo smoothing multi-year daily $dataset means, variances and maxima ...;;
   esac  # bcmethod
-  python $sdir/python/get_coef_hurs_rsds.py $get_coef_hurs_rsds_special_args \
+  python3 $sdir/python/get_coef_hurs_rsds.py $get_coef_hurs_rsds_special_args \
          -a $missval \
          -i $var \
          -n $nrunmeanhursrsds \
