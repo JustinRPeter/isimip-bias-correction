@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -P er4
 #PBS -N job_appcoeff_5
 #PBS -l walltime=24:00:00
@@ -10,12 +11,11 @@
 #PBS -l mem=64gb
 
 module load pbs
-module load 1.12-Intel10.1
 module load netcdf
 module load nco
-module load cdo
+module load cdo/1.7.2
 module load gdl
-module load idl/8.4
+module load idl/8.6
 module load python/2.7.11
 module load ncl
 

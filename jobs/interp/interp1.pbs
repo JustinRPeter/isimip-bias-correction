@@ -1,37 +1,28 @@
 #!/bin/bash
-   
+
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -P er4
-#PBS -N appcoeff_02
-#PBS -l walltime=24:00:00
+#PBS -N job_interp1
+#PBS -l walltime=1:00:00
 ##PBS -l nodes=1
 #PBS -l ncpus=16
 #PBS -l mem=64gb
 
 module load pbs
-module load 1.12-Intel10.1
 module load netcdf
 module load nco
 module load cdo
-module load gdl
-module load idl
-module load python/2.7.11
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
 source /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+masterPath=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS
 
+gcm=ACCESS1-0
 obsdata=AWAP
-refperiod=1975-2005
-var=pr
-bcmeth=pr
-GCM=CNRM-CM5
 rcp=rcp85
-appperiod=2006-2010
-time=midday
+var=tas
+period=2006-2099
 
-/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/app.coef.02.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time
-
-
-
-
+$masterPath/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $gcm $rcp $period False

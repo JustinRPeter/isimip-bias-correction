@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#PBS -q express
+#PBS -l walltime=5:00:00
+#PBS -lstorage=gdata/er4
+#PBS -N log_gennewobs
+#PBS -P er4
+#PBS -l ncpus=16
+#PBS -l mem=128gb
+
+source /g/data/er4/jr6311/miniconda/bin/activate isimip
+
+python3 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/Obs_data_prep/gen_newobs.py

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -P er4
 ##PBS -M wendy.sharples@bom.gov.au
@@ -113,12 +114,14 @@ ifile=${ivar}_${frequency}_${gcm}_${exp}_${realization}_$timeframe.nc
 
 # set output directory and file name
 odir=$idirGCMdata/$gcm
+# odir=$idirGCMdata/qme/$gcm #QME METHOD ONLY
 ofile=${ovar}_${frequency}_${gcm}_${exp}_${realization}_$timeframe  # suffix is determined by shell variable ncs
 [ ! -d $odir ] && mkdir -p $odir
 
 # set paths to remap weights
 remapweightsdir=$tdir/remapweights
 remapgriddesfile=$idirOBSdata/$obsdataset.griddes
+# remapgriddesfile=$idirOBSdata/andrew.griddes
 remapweightsfile=$remapweightsdir/$gcm.remap$remapmethod.$obsdataset$remapweightsfileextension
 [ ! -d $remapweightsdir ] && mkdir -p $remapweightsdir
 

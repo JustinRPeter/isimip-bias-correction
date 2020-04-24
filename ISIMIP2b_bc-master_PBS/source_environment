@@ -1,0 +1,10 @@
+module use /g/data3/hh5/public/modules
+module load conda
+source /g/data3/hh5/public/apps/miniconda3/etc/profile.d/conda.sh
+
+module load openmpi/4.0.1
+
+conda activate /g/data/er4/jr6311/miniconda/envs/isimip2b
+
+export PYTHONPATH=$PYTHONPATH:/g/data/er4/ws1620/software_stack_conda/lib64/python3.6/site-packages
+export PYTHONPATH=$PYTHONPATH:/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/python

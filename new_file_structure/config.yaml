@@ -1,0 +1,67 @@
+Directory Paths:
+  main_working_dir: /g/data
+Time Periods:
+  start_year: 1976
+  end_year: 2005
+  projection_start: 2006
+  projection_end: 2099
+GCM:
+  CNRM-CM5: true
+  MIROC5: false
+  GFDL-ESM2M: false
+  ACCESS1-0: false
+Variables:
+  tasmin:
+    run_enabled: true
+    obs_data_type: AWAP
+    obs_input_dir: /g/data/er4/data/CLIMATE/temp_min_day
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: latest
+  tasmax:
+    run_enabled: true
+    obs_data_type: AWAP
+    obs_input_dir: /g/data/er4/data/CLIMATE/temp_max_day
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: v20130101
+  tas:
+    run_enabled: true
+    obs_data_type: AWAP
+    obs_input_dir: tas
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: v20130101
+  rsds:
+    run_enabled: false
+    obs_data_type: AWAP
+    obs_input_dir: /g/data/er4/data/CLIMATE/solar_exposure_day
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: v20130101
+  pr:
+    run_enabled: false
+    obs_data_type: AWAP
+    obs_input_dir: /g/data/er4/data/CLIMATE/rain_day
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: v20130101
+  sfcWind:
+    run_enabled: false
+    obs_data_type: AWAP
+    obs_input_dir: /g/data/er4/data/CLIMATE/wind
+    gcm_input_dir: /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5
+    rcp: historical
+    version: v20120530
+    projection_rcp: rcp85
+    projection_version: v20130101

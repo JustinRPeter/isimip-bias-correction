@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -l ncpus=16
 #PBS -l mem=32gb
@@ -13,10 +14,10 @@
 #PBS -e qlogs/app.coef.err
 
 module purge
-module load cdo
+module load cdo/1.7.2
 module load nco
 module load gdl
-module load idl/8.4
+module load idl/8.6
 module load python/2.7.11
 module load pbs
 

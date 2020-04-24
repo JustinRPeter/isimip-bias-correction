@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
+#PBS -lstorage=gdata/er4
 #PBS -l walltime=24:00:00
 #PBS -l ncpus=16
 #PBS -l mem=32gb
@@ -13,10 +14,10 @@
 #PBS -e qlogs/app.coef.err
 
 module purge
-module load cdo
+module load cdo/1.7.2
 module load nco
 module load gdl
-module load idl/8.4
+module load idl/8.6
 module load python/2.7.11
 module load pbs
 
@@ -333,7 +334,7 @@ hurs|rsds)
     get_coef_hurs_rsds_special_args="-f $rsdsmaxfitthreshold -t $sdir/python/TOA_daily_mean_insolation_climatology -x $odir/$ifile.ydaymax.$ncs"
     echo smoothing multi-year daily $dataset means, variances and maxima ...;;
   esac  # bcmethod
-  python $sdir/python/get_coef_hurs_rsds.py $get_coef_hurs_rsds_special_args \
+  python3 $sdir/python/get_coef_hurs_rsds.py $get_coef_hurs_rsds_special_args \
          -a $missval \
          -i $var \
          -n $nrunmeanhursrsds \
@@ -413,7 +414,7 @@ hurs|rsds)
 
     [[ $bcmethod = hurs ]] && app_coef_hurs_rsds_special_args="-l -m 100." || app_coef_hurs_rsds_special_args=
     touch $odir/$tfile  # this is necessary since yfile is modified in place
-    python $sdir/python/app_coef_hurs_rsds.py $app_coef_hurs_rsds_special_args \
+    python3 $sdir/python/app_coef_hurs_rsds.py $app_coef_hurs_rsds_special_args \
            -v $var \
            -i $odir/$yfile.$ncs \
            -u $ipathcoefgcmper.$ncs \

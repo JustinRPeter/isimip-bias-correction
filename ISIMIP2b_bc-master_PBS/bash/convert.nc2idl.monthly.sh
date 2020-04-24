@@ -27,6 +27,7 @@ do
   cat > $spath << EOF
 #!/bin/bash
 
+#PBS -lstorage=gdata/er4
 #PBS -q $queue
 #PBS -l walltime=8:00:00
 #PBS -l ncpus=16
@@ -45,7 +46,7 @@ module load nco
 module load gdl
 # module load idl
 module load pbs
-module load idl/8.4
+module load idl/8.6
 
 export IDL_STARTUP=/g/data1a/er4/jr6311/isimip-bias-correction/isimip-bias-correction/.idl/idl-startup.pro
 

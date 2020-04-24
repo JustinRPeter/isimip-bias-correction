@@ -13,7 +13,8 @@ module load cdo
 module load nco
 
 #Read directory and file
-obs_dir=/g/data/er4/data/CLIMATE/wind
+#obs_dir=/g/data/er4/data/CLIMATE/wind
+obs_dir=/g/data/er4/jr6311/winds_transformed_10m
 obs_file=wind
 
 #Time period
