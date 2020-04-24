@@ -11,7 +11,7 @@
 #PBS -l mem=64gb
 
 module load pbs
-module load netcdf
+module load netcdf/4.7.1
 module load nco
 module load cdo/1.7.2
 module load gdl
@@ -25,9 +25,9 @@ obsdata=AWAP
 refperiod=1976-2005
 var=tas
 bcmeth=tas
-GCM=CCAM-r3355-CNRM-CM5
-rcp=historical
-appperiod=1960-2005
+GCM=ACCESS1-0
+rcp=rcp45
+appperiod=2006-2099
 time=midday
 
 /g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/ISIMIP2b_bc-master_PBS/app.coef.sh $obsdata $refperiod $var $bcmeth $GCM $rcp $appperiod $time

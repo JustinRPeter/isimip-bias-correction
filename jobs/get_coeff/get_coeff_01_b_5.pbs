@@ -11,7 +11,7 @@
 #PBS -l mem=64gb
 
 module load pbs
-module load netcdf
+module load netcdf/4.7.1
 module load nco
 module load cdo/1.7.2
 module load gdl
