@@ -130,6 +130,8 @@ if [ ${rcp} == historical ]; then
         decade_start_date=${yst[$ii]}
         decade_end_date=${yen[$ii]}
         decade_output_file=${output_dir}/${output_filename_base}${decade_start_date}-${decade_end_date}.nc
+
+        echo "Creating ${decade_output_file}"
         cdo -f nc4c -z zip_9 -seldate,${decade_start_date},${decade_end_date} ${output_file} ${decade_output_file}
         wait
     done
