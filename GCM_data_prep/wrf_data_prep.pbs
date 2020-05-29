@@ -53,9 +53,10 @@ echo "Temp dir: ${temp_dir}"
 
 
 echo ""
-echo "Looking for files that overlap time period"
+echo "Looking for files that overlap time period ${start_date}-${end_date}"
+echo "Found:"
 
-# Get all files that match the source input pattern, not including year
+# Get all files that match the source input pattern, not including year.
 found_input_files=($(ls ${input_dir}/${source_filename_base}*))
 
 # Loop through the found files to find the ones with overlapping time period we want
@@ -72,7 +73,7 @@ for found_file in "${found_input_files[@]}"; do
     # File ----|----|------------------------------------
     # Arg  -------|--------------|-----------------------
     if [ $file_start_date -le $start_date ] && [ $start_date -le $file_end_date ]; then
-        echo "Using $found_file"
+        echo "$found_file"
         filelist="$filelist $found_file"
         continue
     fi
@@ -82,7 +83,7 @@ for found_file in "${found_input_files[@]}"; do
     # File ---------|----|-------------------------------
     # Arg  -------|--------------|-----------------------
     if [ $start_date -le $file_start_date ] && [ $file_end_date -le $end_date ]; then
-        echo "Using file $found_file"
+        echo "$found_file"
         filelist="$filelist $found_file"
         continue
     fi
@@ -92,7 +93,7 @@ for found_file in "${found_input_files[@]}"; do
     # File -------------------|----|---------------------
     # Arg  -------|--------------|-----------------------
     if [ $file_start_date -ge $start_date ] && [ $file_start_date -le $end_date ]; then
-        echo "Using file $found_file"
+        echo "$found_file"
         filelist="$filelist $found_file"
         continue
     fi
@@ -112,6 +113,7 @@ mkdir -p ${temp_dir}
 temp_merged_file=${temp_dir}/tmp_${source_filename_base}merged.nc
 output_file=${output_dir}/${output_filename_base}${start_date}-${end_date}.nc
 
+echo ""
 echo "Merging all found files overlapping time period into temp file ${temp_merged_file}"
 cdo -f nc4c -z zip_9 -mergetime ${filelist} ${temp_merged_file}
 wait
