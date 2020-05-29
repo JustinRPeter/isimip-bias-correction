@@ -1,0 +1,143 @@
+#!/bin/bash
+
+#PBS -q normal
+#PBS -l storage=gdata/er4+scratch/er4+gdata/at43
+#PBS -P er4
+#PBS -N job_wrf_data_prep
+#PBS -l walltime=1:00:00
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+# Usage
+# Set var, rcp, start_year, end_year, wrf_version, base_gcm, version, and
+# output_dir_base as desired, then submit the job.
+
+
+# Fail on first error
+set -e
+
+# Load required modules
+module load cdo/1.7.2
+
+
+var=pr
+rcp=historical
+start_year=1960
+end_year=2005
+wrf_version=WRF360J
+base_gcm=ACCESS1-0
+version=latest
+output_dir_base=/scratch/er4/vd5822/isimip-prep
+
+
+start_date=${start_year}0101
+end_date=${end_year}1231
+model=${wrf_version}-${base_gcm}
+output_dir=${output_dir_base}/${model}
+input_dir_base=/g/data/at43/output/AUS-44i/UNSW
+input_dir=${input_dir_base}/CSIRO-BOM-${base_gcm}/${rcp}/r1i1p1/UNSW-${wrf_version}/v1/day/${var}/${version}
+source_filename_base=${var}_AUS-44i_CSIRO-BOM-${base_gcm}_${rcp}_r1i1p1_UNSW-${wrf_version}_v1_day_
+output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
+temp_dir=${output_dir}/temp
+
+echo "Variable: ${var}"
+echo "Start Date: ${start_date}"
+echo "End Date: ${end_date}"
+echo "rcp: ${rcp}"
+echo "WRF Version: ${wrf_version}"
+echo "Version: ${version}"
+echo "Base GCM: ${base_gcm}"
+echo "Input dir: ${input_dir}"
+echo "Output dir: ${output_dir}"
+echo "Temp dir: ${temp_dir}"
+
+
+echo ""
+echo "Looking for files that overlap time period ${start_date}-${end_date}"
+echo "Found:"
+
+# Get all files that match the source input pattern, not including year.
+found_input_files=($(ls ${input_dir}/${source_filename_base}*))
+
+# Loop through the found files to find the ones with overlapping time period we want
+filelist=''
+for found_file in "${found_input_files[@]}"; do
+    found_file_basename=$(basename $found_file)
+    date=$(echo $found_file_basename | grep -Eo '[[:digit:]]{4}[[:digit:]]{2}[[:digit:]]{2}')
+    date_arr=($date)
+    file_start_date=${date_arr[0]}
+    file_end_date=${date_arr[1]}
+
+    # Include if file start date is less than start date
+    # arg and file end date is greater than start date arg.
+    # File ----|----|------------------------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $file_start_date -le $start_date ] && [ $start_date -le $file_end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
+
+    # Include if file start date is after start date arg
+    # and file end date is before end date arg.
+    # File ---------|----|-------------------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $start_date -le $file_start_date ] && [ $file_end_date -le $end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
+
+    # Include if file start date is after start date arg
+    # and file start date is before end date arg.
+    # File -------------------|----|---------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $file_start_date -ge $start_date ] && [ $file_start_date -le $end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
+done
+
+# Exit if no files were found
+filelist_array=(${filelist})
+if [ ${#filelist_array[@]} -eq 0 ]; then
+    echo "Error: Did not find any files that overlap time period"
+    exit 1
+fi
+
+# Generate output and temp folders
+mkdir -p ${output_dir}
+mkdir -p ${temp_dir}
+
+temp_merged_file=${temp_dir}/tmp_${source_filename_base}merged.nc
+output_file=${output_dir}/${output_filename_base}${start_date}-${end_date}.nc
+
+echo ""
+echo "Merging all found files overlapping time period into temp file ${temp_merged_file}"
+cdo -f nc4c -z zip_9 -mergetime ${filelist} ${temp_merged_file}
+wait
+
+echo "Extracting desired time period from ${temp_merged_file} and creating output file ${output_file}"
+cdo -f nc4c -z zip_9 -seldate,${start_date},${end_date} ${temp_merged_file} ${output_file}
+wait
+
+if [ ${rcp} == historical ]; then
+    echo "Creating historical decade files needed by ISIMIP2b"
+    yst=( 19710101 19810101 19910101 20010101 )
+    yen=( 19801231 19901231 20001231 20051231 )
+    for (( ii=0;ii<=3;ii++ )); do
+        decade_start_date=${yst[$ii]}
+        decade_end_date=${yen[$ii]}
+        decade_output_file=${output_dir}/${output_filename_base}${decade_start_date}-${decade_end_date}.nc
+
+        echo "Creating ${decade_output_file}"
+        cdo -f nc4c -z zip_9 -seldate,${decade_start_date},${decade_end_date} ${output_file} ${decade_output_file}
+        wait
+    done
+fi
+
+echo "Cleaning up temp files"
+rm -rf ${temp_dir}
+
+echo "Job Completed"
