@@ -44,3 +44,5 @@ for (( ii=0;ii<=3;ii++ )); do
     cdo -f nc4c -z zip_9 -seldate,${yst[$ii]},${yen[$ii]} ${input_file} ${output_file}
     wait
 done
+
+echo "Job Completed"
