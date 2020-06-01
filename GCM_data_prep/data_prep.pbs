@@ -10,13 +10,13 @@
 
 # Usage
 # Set var, model, rcp, version, output_dir_base, then submit the job.
-# Depending on the where files are to be read from/written to, add storage flags to
-# the -l PBS option as necessary.
+# Input files will be set to known locations based on model.
+# Depending on which project folder to read from, modify storage flags (-l PBS option) 
+# as necessary. The flags are not added by default because a given user may only
+# have access to a subset of projects, and/or only want to process a subset of models
 var=pr
 model=ACCESS1-0
 rcp=historical
-wrf_version=WRF360J
-base_gcm=ACCESS1-0
 version=latest
 output_dir_base=/scratch/er4/vd5822/isimip-prep
 
