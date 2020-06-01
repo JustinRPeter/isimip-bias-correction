@@ -9,7 +9,7 @@
 #PBS -l mem=64gb
 
 # Usage
-# Set var, model, rcp, version, output_dir_base, then submit the job.
+# Set var, model, rcp, output_dir_base, then submit the job.
 # Input files will be set to known locations based on model.
 # Depending on which project folder to read from, modify storage flags (-l PBS option) 
 # as necessary. The flags are not added by default because a given user may only
@@ -17,7 +17,6 @@
 var=pr
 model=ACCESS1-0
 rcp=historical
-version=latest
 output_dir_base=/scratch/er4/vd5822/isimip-prep
 
 
@@ -66,31 +65,43 @@ MIROC5)
     echo "Not yet supported"
     exit 1
     ;;
-CCAM-r3355-ACCESS1-0)
-    echo "Not yet supported"
-    exit 1
-    ;;
-CCAM-r3355-CNRM-CM5)
-    echo "Not yet supported"
-    exit 1
-    ;;
-CCAM-r3355-GFDL-ESM2M)
-    echo "Not yet supported"
-    exit 1
-    ;;
-CCAM-r3355-MIROC5)
-    echo "Not yet supported"
-    exit 1
+CCAM-r3355-ACCESS1-0|CCAM-r3355-CNRM-CM5|CCAM-r3355-GFDL-ESM2M|CCAM-r3355-MIROC5)
+    case ${model} in
+    CCAM-r3355-ACCESS1-0)
+        institute_gcm=CSIRO-BOM-ACCESS1-0;;
+    CCAM-r3355-CNRM-CM5)
+        institute_gcm=CNRM-CERFACS-CNRM-CM5;;
+    CCAM-r3355-GFDL-ESM2M)
+        institute_gcm=NOAA-GFDL-GFDL-ESM2M;;
+    CCAM-r3355-MIROC5)
+        institute_gcm=MIROC-MIROC5;;
+    *)
+        echo "Couldn't determine institute/gcm for model ${model}"
+        exit 1
+        ;;
+    esac
+
+    case ${rcp} in
+    rcp45)
+        ccam_drs_subfolder=DELWP;;
+    historical|rcp85)
+        ccam_drs_subfolder=WINE;;
+    *)
+        echo "Couldn't determine ccam_drs_subfolder for CCAM-r3355 model ${model} for rcp ${rcp}"
+        exit 1
+        ;;
+    esac
+
+    input_dir=/scratch/e53/DRS/${ccam_drs_subfolder}/output/AUS-50/CSIRO/${institute_gcm}/${rcp}/r1i1p1/CSIRO-CCAM-r3355/v1/day/${var}
+    source_filename_base=${var}_AUS-50_${institute_gcm}_${rcp}_r1i1p1_CSIRO-CCAM-r3355_v1_day_
     ;;
 WRF360J-ACCESS1-0)
-    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360J/v1/day/${var}/${version}
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360J/v1/day/${var}/latest
     source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360J_v1_day_
-    output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
     ;;
 WRF360K-ACCESS1-0)
-    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360K/v1/day/${var}/${version}
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360K/v1/day/${var}/latest
     source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360K_v1_day_
-    output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
     ;;
 *)
     echo "Unsupported model ${model}"
@@ -98,6 +109,7 @@ WRF360K-ACCESS1-0)
     ;;
 esac
 
+output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
 output_dir=${output_dir_base}/${model}
 temp_dir=${output_dir}/temp_${var}${rcp}
 
@@ -105,7 +117,6 @@ echo "Variable: ${var}"
 echo "Model: ${model}"
 echo "rcp: ${rcp}"
 echo "Period: ${start_date}-${end_date}"
-echo "Version: ${version}"
 echo "Input dir: ${input_dir}"
 echo "Output dir: ${output_dir}"
 echo "Temp dir: ${temp_dir}"
