@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q normal
-#PBS -l storage=gdata/er4+scratch/er4
+#PBS -l storage=gdata/er4+scratch/er4+gdata/at43
 #PBS -P er4
 #PBS -N job_data_prep
 #PBS -l walltime=1:00:00
@@ -41,6 +41,7 @@ rcp45)
 rcp85)
     start_date=20060101
     end_date=20991231
+    ;;
 *)
     echo "Unsupported rcp ${rcp}"
     exit 1
@@ -94,6 +95,7 @@ WRF360K-ACCESS1-0)
 *)
     echo "Unsupported model ${model}"
     exit 1
+    ;;
 esac
 
 output_dir=${output_dir_base}/${model}
