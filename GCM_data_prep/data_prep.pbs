@@ -1,16 +1,24 @@
 #!/bin/bash
 
 #PBS -q normal
-#PBS -l storage=gdata/er4+scratch/er4+gdata/at43
+#PBS -l storage=gdata/er4+scratch/er4
 #PBS -P er4
-#PBS -N job_wrf_data_prep
+#PBS -N job_data_prep
 #PBS -l walltime=1:00:00
 #PBS -l ncpus=16
 #PBS -l mem=64gb
 
 # Usage
-# Set var, rcp, start_year, end_year, wrf_version, base_gcm, version, and
-# output_dir_base as desired, then submit the job.
+# Set var, model, rcp, output_dir_base, then submit the job.
+# Input files will be set to known locations based on model.
+# Depending on which project folder to read from, modify storage flags (-l PBS option) 
+# as necessary. The flags are not added by default because a given user may only
+# have access to a subset of projects, and/or only want to process a subset of models
+var=pr
+model=ACCESS1-0
+rcp=historical
+output_dir_base=/scratch/er4/vd5822/isimip-prep
+
 
 
 # Fail on first error
@@ -19,40 +27,101 @@ set -e
 # Load required modules
 module load cdo/1.7.2
 
+# Determine period
+case ${rcp} in
+historical)
+    start_date=19600101
+    end_date=20051231
+    ;;
+rcp45)
+    start_date=20060101
+    end_date=20991231
+    ;;
+rcp85)
+    start_date=20060101
+    end_date=20991231
+    ;;
+*)
+    echo "Unsupported rcp ${rcp}"
+    exit 1
+    ;;
+esac
 
-var=pr
-rcp=historical
-start_year=1960
-end_year=2005
-wrf_version=WRF360J
-base_gcm=ACCESS1-0
-version=latest
-output_dir_base=/scratch/er4/vd5822/isimip-prep
+# Determine input path
+case ${model} in
+ACCESS1-0)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CNRM-CM5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+GFDL-ESM2M)
+    echo "Not yet supported"
+    exit 1
+    ;;
+MIROC5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CCAM-r3355-ACCESS1-0|CCAM-r3355-CNRM-CM5|CCAM-r3355-GFDL-ESM2M|CCAM-r3355-MIROC5)
+    case ${model} in
+    CCAM-r3355-ACCESS1-0)
+        institute_gcm=CSIRO-BOM-ACCESS1-0;;
+    CCAM-r3355-CNRM-CM5)
+        institute_gcm=CNRM-CERFACS-CNRM-CM5;;
+    CCAM-r3355-GFDL-ESM2M)
+        institute_gcm=NOAA-GFDL-GFDL-ESM2M;;
+    CCAM-r3355-MIROC5)
+        institute_gcm=MIROC-MIROC5;;
+    *)
+        echo "Couldn't determine institute/gcm for model ${model}"
+        exit 1
+        ;;
+    esac
 
+    case ${rcp} in
+    rcp45)
+        ccam_drs_subfolder=DELWP;;
+    historical|rcp85)
+        ccam_drs_subfolder=WINE;;
+    *)
+        echo "Couldn't determine ccam_drs_subfolder for CCAM-r3355 model ${model} for rcp ${rcp}"
+        exit 1
+        ;;
+    esac
 
-start_date=${start_year}0101
-end_date=${end_year}1231
-model=${wrf_version}-${base_gcm}
-output_dir=${output_dir_base}/${model}
-input_dir_base=/g/data/at43/output/AUS-44i/UNSW
-input_dir=${input_dir_base}/CSIRO-BOM-${base_gcm}/${rcp}/r1i1p1/UNSW-${wrf_version}/v1/day/${var}/${version}
-source_filename_base=${var}_AUS-44i_CSIRO-BOM-${base_gcm}_${rcp}_r1i1p1_UNSW-${wrf_version}_v1_day_
+    input_dir=/scratch/e53/DRS/${ccam_drs_subfolder}/output/AUS-50/CSIRO/${institute_gcm}/${rcp}/r1i1p1/CSIRO-CCAM-r3355/v1/day/${var}
+    source_filename_base=${var}_AUS-50_${institute_gcm}_${rcp}_r1i1p1_CSIRO-CCAM-r3355_v1_day_
+    ;;
+WRF360J-ACCESS1-0)
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360J/v1/day/${var}/latest
+    source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360J_v1_day_
+    ;;
+WRF360K-ACCESS1-0)
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360K/v1/day/${var}/latest
+    source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360K_v1_day_
+    ;;
+*)
+    echo "Unsupported model ${model}"
+    exit 1
+    ;;
+esac
+
 output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
+output_dir=${output_dir_base}/${model}
 temp_dir=${output_dir}/temp_${var}${rcp}
 
 echo "Variable: ${var}"
-echo "Start Date: ${start_date}"
-echo "End Date: ${end_date}"
+echo "Model: ${model}"
 echo "rcp: ${rcp}"
-echo "WRF Version: ${wrf_version}"
-echo "Version: ${version}"
-echo "Base GCM: ${base_gcm}"
+echo "Period: ${start_date}-${end_date}"
 echo "Input dir: ${input_dir}"
 echo "Output dir: ${output_dir}"
 echo "Temp dir: ${temp_dir}"
-
-
 echo ""
+
 echo "Looking for files that overlap time period ${start_date}-${end_date}"
 echo "Found:"
 
@@ -121,21 +190,6 @@ wait
 echo "Extracting desired time period from ${temp_merged_file} and creating output file ${output_file}"
 cdo -f nc4c -z zip_9 -seldate,${start_date},${end_date} ${temp_merged_file} ${output_file}
 wait
-
-if [ ${rcp} == historical ]; then
-    echo "Creating historical decade files needed by ISIMIP2b"
-    yst=( 19710101 19810101 19910101 20010101 )
-    yen=( 19801231 19901231 20001231 20051231 )
-    for (( ii=0;ii<=3;ii++ )); do
-        decade_start_date=${yst[$ii]}
-        decade_end_date=${yen[$ii]}
-        decade_output_file=${output_dir}/${output_filename_base}${decade_start_date}-${decade_end_date}.nc
-
-        echo "Creating ${decade_output_file}"
-        cdo -f nc4c -z zip_9 -seldate,${decade_start_date},${decade_end_date} ${output_file} ${decade_output_file}
-        wait
-    done
-fi
 
 echo "Cleaning up temp files"
 rm -rf ${temp_dir}
