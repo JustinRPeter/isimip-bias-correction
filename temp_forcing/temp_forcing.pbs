@@ -49,6 +49,8 @@ echo "Input tasmax file: ${tasmax_file}"
 echo "Output dir: ${output_dir}"
 echo ""
 
+mkdir -p ${output_dir}
+
 echo "Activating conda environment"
 source /g/data/er4/jr6311/miniconda/bin/activate isimip
 
