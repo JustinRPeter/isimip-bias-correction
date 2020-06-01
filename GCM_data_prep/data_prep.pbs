@@ -1,119 +1,199 @@
 #!/bin/bash
 
-#Wendy Sharples- script to copy across data from GCMS that we need with optional merge together in prep for the interpolation
-#Assumes ISIMIP modules are loaded
+#PBS -q normal
+#PBS -l storage=gdata/er4+scratch/er4
+#PBS -P er4
+#PBS -N job_data_prep
+#PBS -l walltime=1:00:00
+#PBS -l ncpus=16
+#PBS -l mem=64gb
 
+# Usage
+# Set var, model, rcp, version, output_dir_base, then submit the job.
+# Depending on the where files are to be read from/written to, add storage flags to
+# the -l PBS option as necessary.
+var=pr
+model=ACCESS1-0
+rcp=historical
+wrf_version=WRF360J
+base_gcm=ACCESS1-0
+version=latest
+output_dir_base=/scratch/er4/vd5822/isimip-prep
+
+
+
+# Fail on first error
+set -e
+
+# Load required modules
 module load cdo/1.7.2
-# USAGE:
-# ./data_prep.sh 1976 2005 CNRM-CM5 /g/data/al33/replicas/CMIP5/combined/CNRM-CERFACS/CNRM-CM5 historical pr v20120530 Y
-# ./data_prep.sh 1976 2005 MIROC5 /g/data/al33/replicas/CMIP5/combined/MIROC/MIROC5 historical pr v20120710 Y
-# ./data_prep.sh 1976 2005 GFDL-ESM2M /g/data/al33/replicas/CMIP5/combined/NOAA-GFDL/GFDL-ESM2M historical pr v20111228 Y
-# ./data_prep.sh 1976 2005 ACCESS1-0 /g/data/rr3/publications/CMIP5/output1/CSIRO-BOM/ACCESS1-0 historical pr latest Y
 
-#year start
-ys=${1}0101
-#year end
-ye=${2}1231
-#gcm
-gcm=$3
-#input path
-ipath=$4
-#rcp
-rcp=$5
-#variable
-var=$6
-#version
-ver=$7
-#merge
-merge=$8
+# Determine period
+case ${rcp} in
+historical)
+    start_date=19600101
+    end_date=20051231
+    ;;
+rcp45)
+    start_date=20060101
+    end_date=20991231
+    ;;
+rcp85)
+    start_date=20060101
+    end_date=20991231
+*)
+    echo "Unsupported rcp ${rcp}"
+    exit 1
+    ;;
+esac
 
-ccam_gcm=$9
+# Determine input path
+case ${model} in
+ACCESS1-0)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CNRM-CM5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+GFDL-ESM2M)
+    echo "Not yet supported"
+    exit 1
+    ;;
+MIROC5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CCAM-r3355-ACCESS1-0)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CCAM-r3355-CNRM-CM5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CCAM-r3355-GFDL-ESM2M)
+    echo "Not yet supported"
+    exit 1
+    ;;
+CCAM-r3355-MIROC5)
+    echo "Not yet supported"
+    exit 1
+    ;;
+WRF360J-ACCESS1-0)
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360J/v1/day/${var}/${version}
+    source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360J_v1_day_
+    output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
+    ;;
+WRF360K-ACCESS1-0)
+    input_dir=/g/data/at43/output/AUS-44i/UNSW/CSIRO-BOM-ACCESS1-0/${rcp}/r1i1p1/UNSW-WRF360K/v1/day/${var}/${version}
+    source_filename_base=${var}_AUS-44i_CSIRO-BOM-ACCESS1-0_${rcp}_r1i1p1_UNSW-WRF360K_v1_day_
+    output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
+    ;;
+*)
+    echo "Unsupported model ${model}"
+    exit 1
+esac
 
-pwd=$PWD
-dateys=$(date -d $ys +"%Y%m%d")
-dateye=$(date -d $ye +"%Y%m%d")
-echo $dateys $dateye
+output_dir=${output_dir_base}/${model}
+temp_dir=${output_dir}/temp_${var}${rcp}
 
-# data_path=${ipath}/${rcp}/r1i1p1/CSIRO-CCAM-r3355/${ver}/day/${var} # Use this for CCAM data
-# filename=${var}_AUS-50_${ccam_gcm}_${rcp}_r1i1p1_CSIRO-CCAM-r3355_v1_day_ # Use this for CCAM data
-data_path=${ipath}/${rcp}/day/atmos/day/r1i1p1/${ver}/${var}
-filename=${var}_day_${gcm}_${rcp}_r1i1p1_
-newfilename=${var}_day_${ccam_gcm}_${rcp}_r1i1p1_
+echo "Variable: ${var}"
+echo "Model: ${model}"
+echo "rcp: ${rcp}"
+echo "Period: ${start_date}-${end_date}"
+echo "Version: ${version}"
+echo "Input dir: ${input_dir}"
+echo "Output dir: ${output_dir}"
+echo "Temp dir: ${temp_dir}"
+echo ""
 
-output_path=/g/data/er4/jr6311/isimip-bias-correction/isimip-bias-correction/
-echo data path is $data_path
+echo "Looking for files that overlap time period ${start_date}-${end_date}"
+echo "Found:"
 
-#get all files pertaining to the start and end year
-get_file_list=''
-get_file_list=$(ls $data_path/*$rcp*)
-#echo $get_file_list
-arr=($get_file_list)
-echo first file: ${arr[0]}
+# Get all files that match the source input pattern, not including year.
+found_input_files=($(ls ${input_dir}/${source_filename_base}*))
 
-#loop around the array of file names- get the year start and year end and check if within range:
+# Loop through the found files to find the ones with overlapping time period we want
 filelist=''
-for file in "${arr[@]}"; do
-date=$(echo `basename $file` | grep -Eo '[[:digit:]]{4}[[:digit:]]{2}[[:digit:]]{2}')
-date_arr=($date)
-        fs=${date_arr[0]}
-fe=${date_arr[1]}
-        echo $file
+for found_file in "${found_input_files[@]}"; do
+    found_file_basename=$(basename $found_file)
+    date=$(echo $found_file_basename | grep -Eo '[[:digit:]]{4}[[:digit:]]{2}[[:digit:]]{2}')
+    date_arr=($date)
+    file_start_date=${date_arr[0]}
+    file_end_date=${date_arr[1]}
 
-        #check within range:
-        fdateys=$(date -d $fs +"%Y%m%d")
-        fdateye=$(date -d $fe +"%Y%m%d")
-        # Include if file start date is less than start date
-        # arg and file end date is greater than start date arg.
-        # File ----|----|------------------------------------
-        # Arg  -------|--------------|-----------------------
-        if [ $fdateys -le $ys ] && [ $ys -le $fdateye ]; then
-echo we are copying file $file
-                filen=$pwd/${filename}${fdateys}-${fdateye}.nc
-filelist="$filelist $filen"
-cp $file $pwd/.
-                continue
-fi
+    # Include if file start date is less than start date
+    # arg and file end date is greater than start date arg.
+    # File ----|----|------------------------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $file_start_date -le $start_date ] && [ $start_date -le $file_end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
 
-        # Include if file start date is after start date arg
-        # and file end date is before end date arg.
-        # File ---------|----|-------------------------------
-        # Arg  -------|--------------|-----------------------
-        if [ $ys -le $fdateys ] && [ $fdateye -le $ye ]; then
-                echo we are copying file $file
-                filen=$pwd/${filename}${fdateys}-${fdateye}.nc
-                filelist="$filelist $filen"
-                cp $file $pwd/.
-                continue
-        fi
+    # Include if file start date is after start date arg
+    # and file end date is before end date arg.
+    # File ---------|----|-------------------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $start_date -le $file_start_date ] && [ $file_end_date -le $end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
 
-        # Include if file start date is after start date arg
-        # and file start date is before end date arg.
-        # File -------------------|----|---------------------
-        # Arg  -------|--------------|-----------------------
-if [ $fdateys -ge $ys ] && [ $fdateys -le $ye ]; then
-                echo we are copying file $file
-filen=$pwd/${filename}${fdateys}-${fdateye}.nc
-filelist="$filelist $filen"
-cp $file $pwd/.
-        fi
+    # Include if file start date is after start date arg
+    # and file start date is before end date arg.
+    # File -------------------|----|---------------------
+    # Arg  -------|--------------|-----------------------
+    if [ $file_start_date -ge $start_date ] && [ $file_start_date -le $end_date ]; then
+        echo "$found_file"
+        filelist="$filelist $found_file"
+        continue
+    fi
 done
-echo $filelist
 
-# Generate output folder if not existent
-mkdir -p $output_path
-
-if [[ $merge =~ "Y" ]]; then
-echo we are merging files and then selecting the date range from $ys to $ye
-        cdo -f nc4c -z zip_9 -mergetime $filelist $pwd/tmp_${filename}merged.nc
-wait
-
-# Merge files and output to "GCM" folder
-cdo -f nc4c -z zip_9 -seldate,$ys,$ye $pwd/tmp_${filename}merged.nc $output_path/${filename}${ys}-${ye}.nc
-# cdo -f nc4c -z zip_9 -seldate,$ys,$ye $pwd/tmp_${filename}merged.nc $output_path/${newfilename}${ys}-${ye}.nc #USE THIS FOR CCAM DATA
-wait
-
-# Clean up files
-rm $pwd/tmp_*
-rm $filelist
-
+# Exit if no files were found
+filelist_array=(${filelist})
+if [ ${#filelist_array[@]} -eq 0 ]; then
+    echo "Error: Did not find any files that overlap time period"
+    exit 1
 fi
+
+# Generate output and temp folders
+mkdir -p ${output_dir}
+mkdir -p ${temp_dir}
+
+temp_merged_file=${temp_dir}/tmp_${source_filename_base}merged.nc
+output_file=${output_dir}/${output_filename_base}${start_date}-${end_date}.nc
+
+echo ""
+echo "Merging all found files overlapping time period into temp file ${temp_merged_file}"
+cdo -f nc4c -z zip_9 -mergetime ${filelist} ${temp_merged_file}
+wait
+
+echo "Extracting desired time period from ${temp_merged_file} and creating output file ${output_file}"
+cdo -f nc4c -z zip_9 -seldate,${start_date},${end_date} ${temp_merged_file} ${output_file}
+wait
+
+if [ ${rcp} == historical ]; then
+    echo "Creating historical decade files needed by ISIMIP2b"
+    yst=( 19710101 19810101 19910101 20010101 )
+    yen=( 19801231 19901231 20001231 20051231 )
+    for (( ii=0;ii<=3;ii++ )); do
+        decade_start_date=${yst[$ii]}
+        decade_end_date=${yen[$ii]}
+        decade_output_file=${output_dir}/${output_filename_base}${decade_start_date}-${decade_end_date}.nc
+
+        echo "Creating ${decade_output_file}"
+        cdo -f nc4c -z zip_9 -seldate,${decade_start_date},${decade_end_date} ${output_file} ${decade_output_file}
+        wait
+    done
+fi
+
+echo "Cleaning up temp files"
+rm -rf ${temp_dir}
+
+echo "Job Completed"
