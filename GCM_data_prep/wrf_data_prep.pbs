@@ -38,7 +38,7 @@ input_dir_base=/g/data/at43/output/AUS-44i/UNSW
 input_dir=${input_dir_base}/CSIRO-BOM-${base_gcm}/${rcp}/r1i1p1/UNSW-${wrf_version}/v1/day/${var}/${version}
 source_filename_base=${var}_AUS-44i_CSIRO-BOM-${base_gcm}_${rcp}_r1i1p1_UNSW-${wrf_version}_v1_day_
 output_filename_base=${var}_day_${model}_${rcp}_r1i1p1_
-temp_dir=${output_dir}/temp
+temp_dir=${output_dir}/temp_${var}${rcp}
 
 echo "Variable: ${var}"
 echo "Start Date: ${start_date}"
