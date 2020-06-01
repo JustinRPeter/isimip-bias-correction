@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#PBS -q express
+#PBS -l walltime=5:00:00
+#PBS -l storage=gdata/er4+scratch/er4
+#PBS -N job_temp_forcing
+#PBS -P er4
+#PBS -l ncpus=16
+#PBS -l mem=128gb
+#PBS -l wd
+
+# Usage
+# Set desired model, rcp, input_dir_base, and output_dir, then run the job.
+# Job should be submitted in the directory that contains it.
+# temp_forcing takes 2 input files (tasmin and tasmax), and generates 3 output files:
+# - derived tas
+# - tasmin (with any inconsistencies with tasmax < tasmin corrected)
+# - tasmax (with any inconsistencies with tasmin > tasmax corrected)
+
+model=ACCESS1-0
+rcp=historical
+input_dir_base=/scratch/er4/vd5822/isimip-prep
+output_dir=/scratch/er4/vd5822/isimip-prep/temp_forcing
+
+
+
+# Fail on first error
+set -e
+
+# Determine period
+if [ ${rcp} = "historical" ]; then
+    period="19600101-20051231"
+fi
+if [ $rcp = "rcp45" ]; then
+    period="20060101-20991231"
+fi
+if [ $rcp = "rcp85" ]; then
+    period="20060101-20991231"
+fi 
+
+tasmin_file=${input_dir_base}/${model}/tasmin_day_${model}_${rcp}_r1i1p1_${period}.nc
+tasmax_file=${input_dir_base}/${model}/tasmax_day_${model}_${rcp}_r1i1p1_${period}.nc
+
+echo "Model: ${model}"
+echo "rcp: ${rcp}"
+echo "Period: ${period}"
+echo "Input tasmin file: ${tasmin_file}"
+echo "Input tasmax file: ${tasmax_file}"
+echo "Output dir: ${output_dir}"
+echo ""
+
+echo "Activating conda environment"
+source /g/data/er4/jr6311/miniconda/bin/activate isimip
+
+echo "Running temp_forcing"
+python3 temp_forcing.py ${tasmin_file} ${tasmax_file} ${model} ${rcp} ${output_dir}
+
+echo "Job Completed"
