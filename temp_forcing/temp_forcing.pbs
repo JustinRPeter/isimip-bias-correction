@@ -11,9 +11,8 @@
 
 # Usage
 # Set desired model, rcp, input_dir_base, and output_dir_base, then run the job.
-# input_dir_base and output_dir_base can point to the same folder; the actual
-# input/output folders are modified based on model and rcp, and in the case of output folder,
-# an extra "temp_forcing" folder is added.
+# input_dir_base and output_dir_base CANNOT point to the same folder.
+# This is because the same named files will be created.
 # Job should be submitted in the directory that contains it.
 # temp_forcing takes 2 input files (tasmin and tasmax), and generates 3 output files:
 # - derived tas
@@ -22,13 +21,19 @@
 
 model=ACCESS1-0
 rcp=historical
-input_dir_base=/scratch/er4/vd5822/isimip-prep
+input_dir_base=/scratch/er4/vd5822/isimip-prep/before-temp-forcing
 output_dir_base=/scratch/er4/vd5822/isimip-prep
 
 
 
 # Fail on first error
 set -e
+
+# Check if input/output base dirs specified are the same
+if [ input_dir_base -ef output_dir_base ]; then
+    echo "Error: input_dir_base and output_dir_base cannot be the same path"
+    exit 1
+fi
 
 # Determine period
 if [ ${rcp} = "historical" ]; then
@@ -43,7 +48,7 @@ fi
 
 tasmin_file=${input_dir_base}/${model}/tasmin_day_${model}_${rcp}_r1i1p1_${period}.nc
 tasmax_file=${input_dir_base}/${model}/tasmax_day_${model}_${rcp}_r1i1p1_${period}.nc
-output_dir=${output_dir_base}/${model}/temp_forcing
+output_dir=${output_dir_base}/${model}
 
 echo "Model: ${model}"
 echo "rcp: ${rcp}"
