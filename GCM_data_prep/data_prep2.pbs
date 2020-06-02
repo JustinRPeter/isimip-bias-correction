@@ -25,20 +25,21 @@ set -e
 module load cdo/1.7.2
 
 input_file=${input_dir_base}/${model}/${var}_day_${model}_historical_r1i1p1_19600101-20051231.nc
+output_dir=${output_dir_base}/${model}
 
 echo "var: ${var}"
 echo "Model: ${model}"
 echo "Input file: ${input_file}"
-echo "Output dir base path: ${output_dir_base}"
+echo "Output dir: ${output_dir}"
 echo ""
 
-mkdir -p ${output_dir_base}
+mkdir -p ${output_dir}
 
 echo "Splitting into decade files for ISIMIP2b"
 yst=( 19710101 19810101 19910101 20010101 )
 yen=( 19801231 19901231 20001231 20051231 )
 for (( ii=0;ii<=3;ii++ )); do
-    output_file=${output_dir_base}/${var}_day_${model}_historical_r1i1p1_${yst[$ii]}-${yen[$ii]}.nc
+    output_file=${output_dir}/${var}_day_${model}_historical_r1i1p1_${yst[$ii]}-${yen[$ii]}.nc
     echo "Creating decade file ${output_file}"
 
     cdo -f nc4c -z zip_9 -seldate,${yst[$ii]},${yen[$ii]} ${input_file} ${output_file}
