@@ -10,9 +10,9 @@
 #PBS -l mem=64gb
 
 module load pbs
-module load netcdf
+module load netcdf/4.7.1
 module load nco
-module load cdo
+module load cdo/1.9.8
 module load ncl
 
 #ASSUMES A STRICT DIR/FILE NAMING CONVENTION SETUP with the source file
