@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q express
-#PBS -lstorage=gdata/er4
+#PBS -lstorage=gdata/er4+scratch/er4
 #PBS -P er4
 #PBS -N job_interp_hist2
 #PBS -l walltime=1:00:00
