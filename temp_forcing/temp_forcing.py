@@ -11,6 +11,9 @@ def get_args():
     parser.add_argument('rcp', help='Provide the rcp of the dataset')
     parser.add_argument('output_path', help='Provide a filepath for outputs')
 
+    parser.add_argument('--convert_to_kelvin', action='store_true',
+        help='Treat input as degress and convert to kelvin')
+
     args = parser.parse_args()
     return args
 
@@ -24,7 +27,7 @@ def get_year(rcp):
         raise NameError(rcp)
 
 
-def remap_tas(min_file, max_file, gcm, rcp, year_string, output_path):
+def remap_tas(min_file, max_file, gcm, rcp, year_string, output_path, convert_to_kelvin):
     # Open datasets and apply corrected arrays
     #THIS IS OPENS A DASK ARRAY!
     tasmin_ds = xr.open_dataset(min_file)
@@ -48,8 +51,9 @@ def remap_tas(min_file, max_file, gcm, rcp, year_string, output_path):
     tas_ds = tas_ds.rename({'tasmin': 'tas'})
     
     # Update values
-    tasmin_ds['tasmin'] += 273.15    
-    tasmax_ds['tasmax'] += 273.15
+    if convert_to_kelvin:
+        tasmin_ds['tasmin'] += 273.15
+        tasmax_ds['tasmax'] += 273.15
     tas_ds['tas'] = 0.5*tasmax_ds['tasmax'] + 0.5*tasmin_ds['tasmin']
 
     # Close datasets to allow saving
@@ -67,5 +71,5 @@ if __name__ == "__main__":
     args = get_args()
     year = get_year(args.rcp)
 
-    remap_tas(args.tasmin_file, args.tasmax_file, args.gcm, args.rcp, year, args.output_path)
+    remap_tas(args.tasmin_file, args.tasmax_file, args.gcm, args.rcp, year, args.output_path, args.convert_to_kelvin)
     print('Operation Complete')
