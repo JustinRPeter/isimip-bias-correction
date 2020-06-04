@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#PBS -q normal
+#PBS -lstorage=xxPBS_JOB_STORAGE_FLAGSxx
+#PBS -P er4
+#PBS -N job_interp_hist.xxMODELxx_xxVARxx
+#PBS -l walltime=1:00:00
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+# Fail on first error
+set -e
+
+module load netcdf/4.7.1
+module load cdo/1.9.8
+module load nco/4.9.2
+
+source xxISIMIP_BASE_DIRxx/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+masterPath=xxISIMIP_BASE_DIRxx/ISIMIP2b_bc-master_PBS
+
+model=xxMODELxx
+obsdata=AWAP
+rcp=historical
+var=xxVARxx
+
+interpolate_for_period() {
+    local period_to_run=$1
+    echo "Interpolating for period ${period_to_run}"
+    $masterPath/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $model $rcp $period_to_run False
+    wait
+}
+
+interpolate_for_period 1971-1980
+interpolate_for_period 1981-1990
+interpolate_for_period 1991-2000
+interpolate_for_period 2001-2005
+
+echo "Job Completed"
