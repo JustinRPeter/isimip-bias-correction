@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#PBS -q normal
+#PBS -lstorage=xxPBS_JOB_STORAGE_FLAGSxx
+#PBS -P er4
+#PBS -N job_interp.xxMODELxx_xxVARxx_xxRCPxx
+#PBS -l walltime=1:00:00
+#PBS -l ncpus=16
+#PBS -l mem=64gb
+
+# Fail on first error
+set -e
+
+module load netcdf/4.7.1
+module load cdo/1.9.8
+module load nco/4.9.2
+
+source xxISIMIP_BASE_DIRxx/ISIMIP2b_bc-master_PBS/exports.settings.functions.sh
+masterPath=xxISIMIP_BASE_DIRxx/ISIMIP2b_bc-master_PBS
+
+model=xxMODELxx
+obsdata=AWAP
+rcp=xxRCPxx
+var=xxVARxx
+
+# Determine period
+case ${rcp} in
+historical)
+    period=1960-2005
+    ;;
+rcp45|rcp85)
+    period=2006-2099
+    ;;
+*)
+    echo "Unsupported rcp ${rcp}"
+    exit 1
+    ;;
+esac
+
+$masterPath/interpolate.2obsdatagrid.2prolepticgregoriancalendar.sh $obsdata $var $model $rcp $period False
+
+echo "Job Completed"
